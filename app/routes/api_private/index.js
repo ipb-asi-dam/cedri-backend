@@ -1,7 +1,5 @@
 const router = require('express').Router();
 
-router.post('user', (req, res) => {
-    const user  = req.body;
-    
-})
+router.use('/user', require('./user'));
+
 module.exports = router;

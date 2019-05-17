@@ -13,6 +13,9 @@ module.exports = function(sequelize, Sequelize){
             type: Sequelize.STRING,
             allowNull: true,
         },
+        isAdmin: {
+            type: Sequelize.
+        }
     }, {
         paranoid: false,
         timestamps: false,
