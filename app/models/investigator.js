@@ -14,8 +14,8 @@ module.exports = function(sequelize, Sequelize){
             allowNull: true,
         },
         isAdmin: {
-            type: Sequelize.
-        }
+            type: Sequelize.BOOLEAN
+        },
     }, {
         paranoid: false,
         timestamps: false,
@@ -24,7 +24,6 @@ module.exports = function(sequelize, Sequelize){
     Investigator.associate = function (models){
         Investigator.belongsTo(models.user);
         Investigator.belongsTo(models.occupation);
-
     }
 
     return Investigator;
