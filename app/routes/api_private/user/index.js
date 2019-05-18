@@ -11,7 +11,11 @@ router.post('/', [
         .toString().trim()
         .isEmail().withMessage('The field email is wrong'),
     
-    check('password', 'Attribute password can\'t be null'),
+    check('password', 'Attribute password can\'t be null')
+        .matches('.*[~!@#\$%\\^&*()\\-_=+\\|\\[{\\]};:\'",<.>/?].*')
+        .withMessage('Password precisa de um caracter especial')
+        .matches('.*[0-9].*').withMessage('Password precisa conter números')
+        .isLength({min: 8}).withMessage('Password precisa ter no minimo 8 caracteres'),
     check('occupationId', 'Attribute occupationId can\'t be null')
         .exists()
         .isNumeric({no_symbols: true}),
@@ -44,7 +48,6 @@ router.post('/', [
             userId: userCreated.id
         }, {transaction});
     });
-
     if(investigadorCreated){
         res.status(201).send({success: true, data: investigadorCreated});
     }else {
