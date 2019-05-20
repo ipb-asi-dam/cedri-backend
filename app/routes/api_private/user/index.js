@@ -12,6 +12,7 @@ router.post('/', [
         .isEmail().withMessage('O campo email está errado'),
     
     check('password', 'Atributo password não pode ser nulo')
+        .exists()
         .matches('.*[~!@#\$%\\^&*()\\-_=+\\|\\[{\\]};:\'",<.>/?].*')
         .withMessage('Password precisa de um caracter especial')
         .matches('.*[0-9].*').withMessage('Password precisa conter números')

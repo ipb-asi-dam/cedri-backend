@@ -4,11 +4,10 @@ const Occupation = models.occupation;
 const { check, validationResult } = require('express-validator/check');
 
 router.post('/', [
-    check('name', 'fodasse')
+    check('name', 'Atributo nome não pode ser nulo')
         .exists()
-        .withMessage('Attribute name can\'t be null')
         .isString()
-        .withMessage('Attribute name is not a string')
+        .withMessage('Atributo nome não é uma string')
 ], async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
