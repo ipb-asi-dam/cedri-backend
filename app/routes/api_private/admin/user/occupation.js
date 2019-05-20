@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const models = require('../../../models');
+const models = require('../../../../models');
 const Occupation = models.occupation;
 const { check, validationResult } = require('express-validator/check');
 
@@ -14,7 +14,7 @@ router.post('/', [
         return res.status(422).json({ success: false, errors: errors.array() });
     }
     try {
-    const createdOccupation = await Occupation.create(req.body);
+        const createdOccupation = await Occupation.create(req.body);
         res.status(201).json({success: true, data: createdOccupation});
     } catch(err){
         res.status(500).json({success: false, msg: 'Erro ao criar Occupation'});

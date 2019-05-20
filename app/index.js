@@ -33,7 +33,7 @@ models.sequelize
   .sync({force: true})
   .then(() => {
     User.create({
-      password: "admin1_",
+      password: "admin123_",
       email: "admin@gmail.com",
     })
     .then((user) => {

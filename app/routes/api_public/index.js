@@ -7,9 +7,25 @@ const env = process.env.NODE_ENV || 'development';
 const isProduction = process.env.NODE_ENV === 'production';
 const { API_SECRET } = require('../../config/config.json')[env];
 const jwt = require('jsonwebtoken');
+const { check, validationResult } = require('express-validator/check');
 
+router.post('/authenticate', [
+    check('email')
+        .exists()
+        .withMessage('Atributo email não pode ser nulo')
+        .toString()
+        .trim()
+        .isEmail()
+        .withMessage('Email com formato inesperado'),
 
-router.post('/authenticate', async (req, res) => {
+    check('password')
+        .exists()
+        .withMessage('Atributo password não pode ser nulo')
+],async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(422).json({ success: false, errors: errors.array() });
+    }
     const user = req.body;
     try {
         const userReturn = await User.findOne({

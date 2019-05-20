@@ -1,5 +1,7 @@
 const router = require('express').Router();
+const {isAdmin} = require('../../middleweres');
 
-router.use('/users', require('./user'));
-router.use('/occupations', require('./user/occupation.js'));
+router.use(isAdmin);
+router.use('/users', require('./admin/user'));
+router.use('/occupations', require('./admin/user/occupation.js'));
 module.exports = router;

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const models = require('../../../models');
+const models = require('../../../../models');
 const { check, validationResult } = require('express-validator/check');
 const Investigator = models.investigator,
     User = models.user,
@@ -37,7 +37,7 @@ router.post('/', [
     const user  = req.body;
 
     try {
-        const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
+            const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
             const occupation = await Occupation.findByPk(user.occupationId, {transaction});
             const userCreated = await User.create({email: user.email, password: user.password}, {transaction});
             return await Investigator.create({
