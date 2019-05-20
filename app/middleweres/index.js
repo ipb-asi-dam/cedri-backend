@@ -43,7 +43,7 @@ middlewares.isAdmin = (req, res, next) => {
                         msg: 'Sem permissão para realizar essa ação'
                     });
             }
-            if (decoded.isAdmin){
+            if (decoded.data.isAdmin){
                 next();
             } else {
                 return res
