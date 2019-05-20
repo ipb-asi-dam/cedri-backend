@@ -18,6 +18,7 @@ router.post('/', [
         .matches('.*[0-9].*').withMessage('Password precisa conter números')
         .isLength({min: 8}).withMessage('Password precisa ter no minimo 8 caracteres'),
     check('occupationId', 'Atributo occupationId precisa ser um número')
+        .optional()
         .isNumeric({no_symbols: true}),
 
     check('name', 'Atributo name não pode ser nulo')
@@ -38,13 +39,9 @@ router.post('/', [
 
     try {
             const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
-            const occupation = await Occupation.findByPk(user.occupationId, {transaction});
             const userCreated = await User.create({email: user.email, password: user.password}, {transaction});
             return await Investigator.create({
-                name: user.name,
-                bio: user.bio,
-                isAdmin: user.isAdmin,
-                occupationId: occupation.id,
+                ...user,
                 userId: userCreated.id
             }, {transaction});
         });
