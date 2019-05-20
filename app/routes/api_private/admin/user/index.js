@@ -2,8 +2,7 @@ const router = require('express').Router();
 const models = require('../../../../models');
 const { check, validationResult } = require('express-validator/check');
 const Investigator = models.investigator,
-    User = models.user,
-    Occupation = models.occupation;
+    User = models.user;
 
 router.post('/', [
     check('email', 'Atributo email não pode ser nulo')
