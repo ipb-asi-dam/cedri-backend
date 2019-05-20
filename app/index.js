@@ -1,22 +1,21 @@
-const createError = require('http-errors');
 const express = require('express');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const models = require('./models');
+const User = models.user,
+      Investigator = models.investigator;
 
 const app = express();
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+//middleware para validar token está dentro de routes
 app.use(require('./routes'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  res.status(404).send({success: false, msg: 'Rota não encontrada'});
 });
 
 // error handler
@@ -32,7 +31,23 @@ app.use(function(err, req, res, next) {
 
 models.sequelize
   .sync({force: true})
-  .then(() => console.log('Nice! Database looks fine'))
+  .then(() => {
+    User.create({
+      password: "admin1_",
+      email: "admin@gmail.com",
+    })
+    .then((user) => {
+      Investigator.create({
+        name: "Admin",
+        isAdmin: true,
+        bio: "Bio teste",
+        userId: user.id
+      })
+      .then((inv) => {
+        console.log(inv.dataValues, 'Nice! Database looks fine')
+      })
+    });
+  })
   .catch((err) => console.log(err, 'Something went wrong with the Database Update!'));
 
 

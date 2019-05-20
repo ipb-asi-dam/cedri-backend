@@ -14,7 +14,9 @@ module.exports = function(sequelize, Sequelize){
             allowNull: true,
         },
         isAdmin: {
-            type: Sequelize.BOOLEAN
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
         },
     }, {
         paranoid: false,
@@ -25,6 +27,24 @@ module.exports = function(sequelize, Sequelize){
         Investigator.belongsTo(models.user);
         Investigator.belongsTo(models.occupation);
     }
-
+    Investigator.loadScopes = (models) => {
+        Investigator.addScope('complete', () => {
+            return {
+                attributes: ['id', 'name', 'bio', 'isAdmin'],
+                required: true,
+                include: [
+                    {
+                        model: models.occupation,
+                        attributes: ['name'],
+                    },
+                    {
+                        model: models.user,
+                        attributes: ['email', 'avatarPath'],
+                        required: true
+                    },
+                ],
+            };
+        });
+    }
     return Investigator;
 }

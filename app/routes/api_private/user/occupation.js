@@ -14,10 +14,11 @@ router.post('/', [
     if(!errors.isEmpty()){
         return res.status(422).json({ success: false, errors: errors.array() });
     }
+    try {
     const createdOccupation = await Occupation.create(req.body);
-    if(createdOccupation)
         res.status(201).json({success: true, data: createdOccupation});
-    else
+    } catch(err){
         res.status(500).json({success: false, msg: 'Erro ao criar Occupation'});
+    }
 });
 module.exports = router;

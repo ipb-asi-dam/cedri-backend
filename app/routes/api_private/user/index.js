@@ -6,27 +6,26 @@ const Investigator = models.investigator,
     Occupation = models.occupation;
 
 router.post('/', [
-    check('email', 'Attribute email can\'t be null')
+    check('email', 'Atributo email não pode ser nulo')
         .exists()
         .toString().trim()
-        .isEmail().withMessage('The field email is wrong'),
+        .isEmail().withMessage('O campo email está errado'),
     
-    check('password', 'Attribute password can\'t be null')
+    check('password', 'Atributo password não pode ser nulo')
         .matches('.*[~!@#\$%\\^&*()\\-_=+\\|\\[{\\]};:\'",<.>/?].*')
         .withMessage('Password precisa de um caracter especial')
         .matches('.*[0-9].*').withMessage('Password precisa conter números')
         .isLength({min: 8}).withMessage('Password precisa ter no minimo 8 caracteres'),
-    check('occupationId', 'Attribute occupationId can\'t be null')
-        .exists()
+    check('occupationId', 'Atributo occupationId precisa ser um número')
         .isNumeric({no_symbols: true}),
 
-    check('name', 'Attribute name can\'t be null')
+    check('name', 'Atributo name não pode ser nulo')
         .exists()
-        .isString().withMessage('Name need to be a string'),
+        .isString().withMessage('Name precisa ser uma string'),
     
-    check('isAdmin', 'Attribute isAdmin can\'t be null')
+    check('isAdmin', 'Atributo isAdmin não pode ser nulo')
         .exists()
-        .isBoolean().withMessage('isAdmin need to be a boolean'),
+        .isBoolean().withMessage('isAdmin precisa ser booleano'),
 
     
 ], async (req, res) => {
@@ -35,25 +34,23 @@ router.post('/', [
         return res.status(422).json({ success: false, errors: errors.array() });
     }
     const user  = req.body;
-// precisa fazer a verificação se esse usuário pode criar um novo investigador no banco de dados.
 
-    const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
-        const occupation = await Occupation.findByPk(user.occupationId, {transaction});
-        const userCreated = await User.create({email: user.email, password: user.password}, {transaction});
-        return await Investigator.create({
-            name: user.name,
-            bio: user.bio,
-            isAdmin: user.isAdmin,
-            occupationId: occupation.id,
-            userId: userCreated.id
-        }, {transaction});
-    });
-    if(investigadorCreated){
-        res.status(201).send({success: true, data: investigadorCreated});
-    }else {
+    try {
+        const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
+            const occupation = await Occupation.findByPk(user.occupationId, {transaction});
+            const userCreated = await User.create({email: user.email, password: user.password}, {transaction});
+            return await Investigator.create({
+                name: user.name,
+                bio: user.bio,
+                isAdmin: user.isAdmin,
+                occupationId: occupation.id,
+                userId: userCreated.id
+            }, {transaction});
+        });
+        return res.status(201).send({success: true, data: investigadorCreated});
+    } catch(err){
         res.status(500).send({success: false, msg: 'Erro ao criar investigador'})
     }
-
 })
 
 module.exports = router;
