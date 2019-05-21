@@ -9,6 +9,7 @@ const { API_SECRET } = require('../../config/config.json')[env];
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator/check');
 const mailer = require('../../config/global_modules/mailer-wrap');
+
 router.post('/authenticate', [
     check('email')
         .exists()
@@ -97,7 +98,14 @@ router.post('/recovery', [
                 expiresIn: '15m',
             });
             investigador.token = token;
-            await mailer.sendRecoveryEmail(investigador);
+            try {
+                const email = await mailer.sendRecoveryEmail(investigador);
+                res.status(200)
+                    .send({success: true, data: email});
+            } catch (err) {
+                res.status(500)
+                    .send({success: false, msg: 'Erro ao enviar email'});
+            }
         } else {
             return res.status(404)
                 .send({success: false, msg: 'Usuário não encontrado'});

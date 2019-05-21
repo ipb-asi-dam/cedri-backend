@@ -26,6 +26,7 @@ module.exports = function(sequelize, Sequelize){
     Investigator.associate = function (models){
         Investigator.belongsTo(models.user);
         Investigator.belongsTo(models.occupation);
+        Investigator.hasMany(models.project);
     }
     Investigator.loadScopes = (models) => {
         Investigator.addScope('complete', () => {
