@@ -34,7 +34,7 @@ models.sequelize
   .then(() => {
     User.create({
       password: "admin123_",
-      email: "admin@gmail.com",
+      email: "guilherme.ianhez2@gmail.com",
     })
     .then((user) => {
       Investigator.create({

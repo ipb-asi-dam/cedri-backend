@@ -8,7 +8,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const { API_SECRET } = require('../../config/config.json')[env];
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator/check');
-
+const mailer = require('../../config/global_modules/mailer-wrap');
 router.post('/authenticate', [
     check('email')
         .exists()
@@ -21,7 +21,7 @@ router.post('/authenticate', [
     check('password')
         .exists()
         .withMessage('Atributo password não pode ser nulo')
-],async (req, res) => {
+], async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(422).json({ success: false, errors: errors.array() });
@@ -65,5 +65,47 @@ router.post('/authenticate', [
     }
 });
 
+router.post('/recovery', [
+    check('email')
+        .exists()
+        .withMessage('Email não pode ser nulo')
+        .toString()
+        .trim()
+        .isEmail()
+        .withMessage('Campo email inválido!')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(422).json({ success: false, errors: errors.array() });
+    }
+    try {
+        let investigador = await Investigator.findOne({
+            attributes: ['name', 'bio', 'isAdmin', 'occupationId'],
+            include: [{
+                model: User,
+                attributes: ['email'],
+                where: {
+                    email: req.body.email
+                }
+            }]
+        });
+        if(investigador) {
+            investigador = investigador.dataValues;
+            const token = jwt.sign({
+                data: investigador,
+            }, API_SECRET, {
+                expiresIn: '15m',
+            });
+            investigador.token = token;
+            await mailer.sendRecoveryEmail(investigador);
+        } else {
+            return res.status(404)
+                .send({success: false, msg: 'Usuário não encontrado'});
+        }
+    } catch(err) {
+        return res.status(500)
+            .send({success: false, msg: 'Não foi possivel concluir a solicitação de recovery'})
+    }
+});
 
 module.exports = router;
