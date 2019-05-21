@@ -104,7 +104,7 @@ router.post('/recovery', [
                     .send({success: true, data: email});
             } catch (err) {
                 res.status(500)
-                    .send({success: false, msg: 'Erro ao enviar email'});
+                    .send({success: false, msg: 'Erro ao enviar email'})
             }
         } else {
             return res.status(404)
