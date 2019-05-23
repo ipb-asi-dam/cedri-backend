@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const models = require('../../../../models');
-const { check, validationResult } = require('express-validator/check');
+const { param, check, validationResult } = require('express-validator/check');
 const Investigator = models.investigator,
     User = models.user;
 const mailer = require('../../../../config/global_modules/mailer-wrap');
-const bcripty = require('bcryptjs');
+const {isAdmin} = require('../../../../middleweres');
 
 const shuffle = (word) => {
     let a = word.split("");
@@ -41,6 +41,7 @@ const makePassword = (lengthCharacter, lengthNumber, lengthSpecialCharacter) => 
 }
  
 router.post('/', [
+    isAdmin,
     check('email', 'Atributo email não pode ser nulo')
         .exists()
         .toString().trim()
@@ -57,8 +58,6 @@ router.post('/', [
     check('isAdmin', 'Atributo isAdmin não pode ser nulo')
         .exists()
         .isBoolean().withMessage('isAdmin precisa ser booleano'),
-
-    
 ], async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -76,14 +75,24 @@ router.post('/', [
                 await mailer.newUserEmail({name: investigator.name, password: user.password, email: userCreated.email});
                 return investigator;
             });
-        return res.status(201).send({success: true, data: investigadorCreated});
+        return res.status(201).send({
+            success: true, 
+            data: await Investigator.scope('basic')
+                .findOne(
+                    {where: {id: investigadorCreated.id}
+                })
+        });
     } catch(err){
         console.log(err);
         res.status(500).send({success: false, msg: 'Erro ao criar investigador'})
     }
 })
 
-router.put('/', [
+router.put('/:id', [
+    param('id', 'Parametro id não pode ser nulo')
+        .exists()
+        .isNumeric({no_symbols: true})
+        .withMessage('Id precisa ser um número'),
     check('email')
         .toString()
         .trim()
@@ -91,20 +100,58 @@ router.put('/', [
         .withMessage('Email não é válido')
         .optional(),
     check('password')
-        .matches('.*[~!@#\$%\\^&*()\\-_=+\\|\\[{\\]};:\'",<.>/?].*')
+        .matches('[~!@#\$%\&*\-_=\+;:,\.]')
         .withMessage('Password precisa de um caracter especial')
-        .matches('.*[0-9].*').withMessage('Password precisa conter números')
+        .matches('[0-9]*').withMessage('Password precisa conter números')
         .isLength({min: 8, max: 255}).withMessage('Password precisa ter no minimo 8 e no máximo 255 caracteres')
         .optional(),
 ],async(req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(422).json({ success: false, errors: errors.array() });
+    }
+    const id = req.params.id;
     const user = req.body;
-    
     try {
         await models.sequelize.transaction(async (transaction) => {
-            await Investigador.update(user);
+            const investigator = await Investigator.findByPk(id, {transaction});
+            if(!investigator.isAdmin && id != investigator.id){
+                console.log('entrou')
+            }
+            await Investigator.update(user, {
+                where: {id: investigator.id}
+            }, {transaction});
+            await User.update(user, {
+                where: {id: investigator.userId}
+            }, {transaction});
         });
+        res.status(200).send({success: true, msg: 'Usuário atualizado com sucesso!'})
     }catch(err) {
+        console.log(err)
+        return res.status(500).send({success: false, msg: 'Erro ao atualizar usuário.'});
+    }
+});
 
+router.get('/', isAdmin,async (req, res) => {
+    try {
+        const users = await Investigator.scope('basic').findAll();
+        res.status(200).send({success: true, data: users });
+    }catch(err){
+        return res.status(500).send({success: false, msg: 'Erro ao listar usuários.'});
+    }
+});
+
+router.get('/:id', isAdmin,async (req, res) => {
+    const id = req.params.id;
+    try {
+        const users = await Investigator.scope('basic').findOne({
+            where: {
+                id: id,
+            }
+        });
+        res.status(200).send({success: true, data: users });
+    }catch(err){
+        return res.status(500).send({success: false, msg: 'Erro ao listar usuários.'});
     }
 });
 module.exports = router;

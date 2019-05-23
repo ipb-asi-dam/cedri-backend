@@ -4,9 +4,6 @@ const HttpStatus = require('http-status-codes');
 const { API_SECRET } = require('../config/config.json')[env];
 const middlewares = {};
 
-function checkToken(token){
-    
-};
 middlewares.isValidToken = (req, res, next) => {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
 
@@ -61,6 +58,19 @@ middlewares.isAdmin = (req, res, next) => {
     }
 
     
+};
+
+middlewares.hasPermission = (token) => {
+    jwt.verify(token, API_SECRET, (error, decoded) => {
+        if (error) {
+            return {hasPermission: false, data: ''};
+        }
+        if (decoded.data.isAdmin){
+            return {hasPermission: false, data: decoded.data};
+        } else {
+            return {hasPermission: false, data: ''};
+        }
+    });
 };
 
 module.exports = middlewares;

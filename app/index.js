@@ -34,18 +34,32 @@ app.use(function(err, req, res, next) {
 models.sequelize
   .sync({force: true})
   .then( async () => {
-    const user = await User.create({
+    const userAdmin = await User.create({
       password: "admin123_",
       email: "guilherme.ianhez2@gmail.com",
     })
-    const investigator = await Investigator.create({
-        name: "Admin",
+    const userNormal = await User.create({
+      password: "teste123_",
+      email: "teste@gmail.com",
+    })
+    const investigatorAdmin = await Investigator.create({
+        name: "Joe Admin",
         isAdmin: true,
         bio: "Bio teste",
-        userId: user.id
+        userId: userAdmin.id
     })
-    const invCompleto = await Investigator.scope('complete').findByPk(investigator.id)
-    console.log(invCompleto.toJSON(), 'Nice! Database looks fine')
+    const investigatorNormal = await Investigator.create({
+      name: "Joe normal",
+      isAdmin: false,
+      bio: "Bio teste",
+      userId: userNormal.id
+  })
+    const invCompletoAdmin = await Investigator.scope('complete').findByPk(investigatorAdmin.id)
+    const invCompletoNormal = await Investigator.scope('complete').findByPk(investigatorNormal.id)
+
+    console.log(invCompletoAdmin.toJSON())
+    console.log(invCompletoNormal.toJSON())
+    console.log('Nice! Database looks fine')
   })
   .catch((err) => console.log(err, 'Something went wrong with the Database Update!'));
 

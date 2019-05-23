@@ -3,7 +3,7 @@
       "port": 3306,
       "database": "api_cedri",
       "username": "root",
-      "password": "",
+      "password": "root",
       "host": "127.0.0.1",
       "dialect": "mysql",
       "timezone": "+01:00",

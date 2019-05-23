@@ -46,6 +46,18 @@ module.exports = function(sequelize, Sequelize){
                 ],
             };
         });
+        Investigator.addScope('basic', () => {
+            return {
+                attributes: ['id', 'name', 'isAdmin'],
+                required: true,
+                include: [{
+                        model: models.user,
+                        attributes: ['email', 'avatar'],
+                        required: true
+                    },
+                ],
+            };
+        });
     }
     return Investigator;
 }
