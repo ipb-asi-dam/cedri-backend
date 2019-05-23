@@ -23,6 +23,7 @@ router.post('/authenticate', [
         .exists()
         .withMessage('Atributo password não pode ser nulo')
 ], async (req, res) => {
+    console.log('entro', req.body)
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(422).json({ success: false, errors: errors.array() });
@@ -34,6 +35,7 @@ router.post('/authenticate', [
                 email: user.email,
             }
         });
+        console.log(user);
         const match = await bcrypt.compare(user.password, userReturn.dataValues.password);
         if(match){
             const dataJWT = await Investigator.scope('complete').findByPk(userReturn.dataValues.id);

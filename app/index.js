@@ -4,9 +4,11 @@ const logger = require('morgan');
 const models = require('./models');
 const User = models.user,
       Investigator = models.investigator;
+const cors = require('cors');
 
 const app = express();
 app.use(logger('dev'));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -31,22 +33,19 @@ app.use(function(err, req, res, next) {
 
 models.sequelize
   .sync({force: true})
-  .then(() => {
-    User.create({
+  .then( async () => {
+    const user = await User.create({
       password: "admin123_",
       email: "guilherme.ianhez2@gmail.com",
     })
-    .then((user) => {
-      Investigator.create({
+    const investigator = await Investigator.create({
         name: "Admin",
         isAdmin: true,
         bio: "Bio teste",
         userId: user.id
-      })
-      .then((inv) => {
-        console.log(inv.dataValues, 'Nice! Database looks fine')
-      })
-    });
+    })
+    const invCompleto = await Investigator.scope('complete').findByPk(investigator.id)
+    console.log(invCompleto.toJSON(), 'Nice! Database looks fine')
   })
   .catch((err) => console.log(err, 'Something went wrong with the Database Update!'));
 

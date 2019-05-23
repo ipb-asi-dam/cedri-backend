@@ -19,10 +19,9 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.STRING,
             allowNull: false,
         },
-        avatarPath: {
+        avatar: {
             type: Sequelize.STRING,
-            allowNull: false,
-            defaultValue: 'testeAvatar'
+            allowNull: true,
         },
     }, {
         paranoid: true,

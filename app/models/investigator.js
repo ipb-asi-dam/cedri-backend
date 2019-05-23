@@ -40,7 +40,7 @@ module.exports = function(sequelize, Sequelize){
                     },
                     {
                         model: models.user,
-                        attributes: ['email', 'avatarPath'],
+                        attributes: ['email', 'avatar'],
                         required: true
                     },
                 ],
