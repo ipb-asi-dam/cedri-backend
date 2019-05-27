@@ -4,7 +4,7 @@ const { param, check, validationResult } = require('express-validator/check');
 const Investigator = models.investigator,
     User = models.user;
 const mailer = require('../../../../config/global_modules/mailer-wrap');
-const {isAdmin} = require('../../../../middleweres');
+const {isAdmin, hasPermission} = require('../../../../middleweres');
 
 const shuffle = (word) => {
     let a = word.split("");
@@ -46,18 +46,13 @@ router.post('/', [
         .exists()
         .toString().trim()
         .isEmail().withMessage('O campo email está errado'),
-    
-    check('occupationId', 'Atributo occupationId precisa ser um número')
-        .optional()
-        .isNumeric({no_symbols: true}),
-
     check('name', 'Atributo name não pode ser nulo')
         .exists()
-        .isString().withMessage('Name precisa ser uma string'),
-    
+        .isString().withMessage('Name precisa ser uma string'),   
     check('isAdmin', 'Atributo isAdmin não pode ser nulo')
         .exists()
         .isBoolean().withMessage('isAdmin precisa ser booleano'),
+
 ], async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -66,15 +61,15 @@ router.post('/', [
     const user  = req.body;
     user.password = makePassword(4,3,1);
     try {
-            const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
-                const userCreated = await User.create({email: user.email, password: user.password}, {transaction});
-                const investigator = await Investigator.create({
-                    ...user,
-                    userId: userCreated.id
-                }, {transaction});
-                await mailer.newUserEmail({name: investigator.name, password: user.password, email: userCreated.email});
-                return investigator;
-            });
+        const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
+            const userCreated = await User.create(user, {transaction});
+            const investigator = await Investigator.create({
+                ...user,
+                userId: userCreated.id
+            }, {transaction});
+            await mailer.newUserEmail({name: investigator.name, password: user.password, email: userCreated.email});
+            return investigator;
+        });
         return res.status(201).send({
             success: true, 
             data: await Investigator.scope('basic')
@@ -89,6 +84,7 @@ router.post('/', [
 })
 
 router.put('/:id', [
+    hasPermission,
     param('id', 'Parametro id não pode ser nulo')
         .exists()
         .isNumeric({no_symbols: true})
@@ -105,6 +101,9 @@ router.put('/:id', [
         .matches('[0-9]*').withMessage('Password precisa conter números')
         .isLength({min: 8, max: 255}).withMessage('Password precisa ter no minimo 8 e no máximo 255 caracteres')
         .optional(),
+    check('occupation')
+        .toString()
+        .optional(),
 ],async(req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -115,9 +114,6 @@ router.put('/:id', [
     try {
         await models.sequelize.transaction(async (transaction) => {
             const investigator = await Investigator.findByPk(id, {transaction});
-            if(!investigator.isAdmin && id != investigator.id){
-                console.log('entrou')
-            }
             await Investigator.update(user, {
                 where: {id: investigator.id}
             }, {transaction});
@@ -134,7 +130,7 @@ router.put('/:id', [
 
 router.get('/', isAdmin,async (req, res) => {
     try {
-        const users = await Investigator.scope('basic').findAll();
+        const users = await Investigator.scope('complete').findAll();
         res.status(200).send({success: true, data: users });
     }catch(err){
         return res.status(500).send({success: false, msg: 'Erro ao listar usuários.'});
@@ -144,7 +140,7 @@ router.get('/', isAdmin,async (req, res) => {
 router.get('/:id', isAdmin,async (req, res) => {
     const id = req.params.id;
     try {
-        const users = await Investigator.scope('basic').findOne({
+        const users = await Investigator.scope('complete').findOne({
             where: {
                 id: id,
             }

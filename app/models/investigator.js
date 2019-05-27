@@ -13,6 +13,10 @@ module.exports = function(sequelize, Sequelize){
             type: Sequelize.STRING,
             allowNull: true,
         },
+        occupation: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
         isAdmin: {
             type: Sequelize.BOOLEAN,
             allowNull: false,
@@ -25,19 +29,15 @@ module.exports = function(sequelize, Sequelize){
     });
     Investigator.associate = function (models){
         Investigator.belongsTo(models.user);
-        Investigator.belongsTo(models.occupation);
+        Investigator.hasMany(models.publication);
         Investigator.hasMany(models.project);
     }
     Investigator.loadScopes = (models) => {
         Investigator.addScope('complete', () => {
             return {
-                attributes: ['id', 'name', 'bio', 'isAdmin'],
+                attributes: ['id', 'name', 'bio', 'isAdmin', 'occupation'],
                 required: true,
                 include: [
-                    {
-                        model: models.occupation,
-                        attributes: ['name'],
-                    },
                     {
                         model: models.user,
                         attributes: ['email', 'avatar'],

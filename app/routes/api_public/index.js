@@ -23,7 +23,6 @@ router.post('/authenticate', [
         .exists()
         .withMessage('Atributo password não pode ser nulo')
 ], async (req, res) => {
-    console.log('entro', req.body)
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(422).json({ success: false, errors: errors.array() });
@@ -35,7 +34,6 @@ router.post('/authenticate', [
                 email: user.email,
             }
         });
-        console.log(user);
         const match = await bcrypt.compare(user.password, userReturn.dataValues.password);
         if(match){
             const dataJWT = await Investigator.scope('complete').findByPk(userReturn.dataValues.id);
@@ -83,7 +81,7 @@ router.post('/recovery', [
     }
     try {
         let investigador = await Investigator.findOne({
-            attributes: ['name', 'bio', 'isAdmin', 'occupationId'],
+            attributes: ['name', 'bio', 'isAdmin'],
             include: [{
                 model: User,
                 attributes: ['email'],
@@ -103,7 +101,7 @@ router.post('/recovery', [
             try {
                 const email = await mailer.sendRecoveryEmail(investigador);
                 res.status(200)
-                    .send({success: true, data: email});
+                    .send({success: true, msg: "Email de recuperaçao enviado!"});
             } catch (err) {
                 res.status(500)
                     .send({success: false, msg: 'Erro ao enviar email'})

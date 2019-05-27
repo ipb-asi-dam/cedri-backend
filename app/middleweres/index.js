@@ -15,7 +15,7 @@ middlewares.isValidToken = (req, res, next) => {
             if (error) {
                 return res
                     .status(403)
-                    .send({success: false, message: 'Seu token é inválido! Por favor, tente entrar novamente'});
+                    .send({success: false, msg: 'Token é inválido! Por favor, tente entrar novamente'});
             }
 
             req.user = decoded.data;
@@ -37,7 +37,7 @@ middlewares.isAdmin = (req, res, next) => {
                     .status(403)
                     .send({
                         success: false,
-                        msg: 'Sem permissão para realizar essa ação'
+                        msg: 'Token é inválido! Por favor, tente entrar novamente'
                     });
             }
             if (decoded.data.isAdmin){
@@ -60,15 +60,27 @@ middlewares.isAdmin = (req, res, next) => {
     
 };
 
-middlewares.hasPermission = (token) => {
+middlewares.hasPermission = (req, res, next) => {
+    const token = req.body.token || req.query.token || req.headers['x-access-token'];
+    const id = req.params.id;
     jwt.verify(token, API_SECRET, (error, decoded) => {
         if (error) {
-            return {hasPermission: false, data: ''};
-        }
-        if (decoded.data.isAdmin){
-            return {hasPermission: false, data: decoded.data};
+            return res
+                .status(403)
+                .send({
+                    success: false,
+                    msg: 'Token é inválido! Por favor, tente entrar novamente'
+                });
+    }
+        if (!decoded.data.isAdmin && decoded.data.id != id || !decoded.data.isAdmin && req.body.isAdmin !== undefined){
+            return res
+                .status(401)
+                .send({
+                    sucess: false,
+                    msg: "Você não tem permissão realizer essa ação"
+                })
         } else {
-            return {hasPermission: false, data: ''};
+            return next();
         }
     });
 };

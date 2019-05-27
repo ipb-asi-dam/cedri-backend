@@ -2,8 +2,8 @@ const router = require('express').Router();
 const {isAdmin} = require('../../middleweres');
 
 router.use('/users', require('./admin/user'));
+router.use('/books', require('./investigator/book'));
 router.use(isAdmin);
-router.use('/occupations', require('./admin/user/occupation.js'));
 router.use('/communications', require('./admin/communication'));
 router.use('/medias', require('./admin/communication/media.js'));
 router.use('/events', require('./admin/communication/event.js'));
