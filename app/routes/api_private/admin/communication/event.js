@@ -24,6 +24,29 @@ router.post('/', [
     }
 })
 
+router.get('/', async (req, res) => {
+    try {
+        const event = await Event.scope('complete').findAll();
+        res.status(200).send({ success: true, data: event });
+    } catch (err) {
+        return res.status(500).send({ success: false, msg: 'Erro ao listar event.' });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const event = await Event.scope('complete').findOne({
+            where: {
+                id: id,
+            }
+        });
+        res.status(200).send({ success: true, data: event });
+    } catch (err) {
+        return res.status(500).send({ success: false, msg: 'Erro ao listar Event.' });
+    }
+});
+
 router.put('/:id', [
     param('id', 'Id não pode ser nulo')
         .exists()
@@ -56,26 +79,15 @@ router.put('/:id', [
     }
 });
 
-router.get('/', async (req, res) => {
-    try {
-        const event = await Event.scope('complete').findAll();
-        res.status(200).send({ success: true, data: event });
-    } catch (err) {
-        return res.status(500).send({ success: false, msg: 'Erro ao listar event.' });
-    }
-});
-
-router.get('/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const event = await Event.scope('complete').findOne({
-            where: {
-                id: id,
-            }
+        const event = await Event.destroy({
+            where: { id: id }
         });
         res.status(200).send({ success: true, data: event });
     } catch (err) {
-        return res.status(500).send({ success: false, msg: 'Erro ao listar Event.' });
+        return res.status(500).send({ success: false, msg: 'Erro ao apagar event.' });
     }
 });
 
