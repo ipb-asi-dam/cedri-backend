@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const models = require('../../../../models');
-const { check, validationResult } = require('express-validator/check');
+const { param, check, validationResult } = require('express-validator/check');
 const Media = models.media;
 
 router.post('/', [
@@ -21,9 +21,37 @@ router.post('/', [
     }
 })
 
+router.put('/:id', [
+    param('id', 'Id não pode ser nulo')
+        .exists()
+        .isNumeric({ no_symbols: true })
+        .withMessage('Id precisa ser um número'),
+    check('description')
+        .optional(),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ success: false, errors: errors.array() });
+    }
+    const id = req.params.id;
+    const mediaUpdated = req.body;
+    try {
+        await models.sequelize.transaction(async (transaction) => {
+            const media = await Media.findByPk(id, { transaction });
+            await Media.update(mediaUpdated, {
+                where: { id: media.id }
+            }, { transaction });
+        });
+        res.status(200).send({ success: true, msg: 'Media atualizado com sucesso!' })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({ success: false, msg: 'Erro ao atualizar Media.' });
+    }
+});
+
 router.get('/', async (req, res) => {
     try {
-        const media = await Media.scope('basic').findAll();
+        const media = await Media.scope('complete').findAll();
         res.status(200).send({ success: true, data: media });
     } catch (err) {
         return res.status(500).send({ success: false, msg: 'Erro ao listar media.' });
