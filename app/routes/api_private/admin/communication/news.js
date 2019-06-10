@@ -2,7 +2,6 @@ const router = require('express').Router();
 const models = require('../../../../models');
 const { check, validationResult } = require('express-validator/check');
 const News = models.news;
-const {isAdmin} = require('../../../../middleweres');
 
 router.post('/', [
     check('photo', 'Atributo photo não pode ser nulo')
@@ -24,17 +23,26 @@ router.post('/', [
     }
 })
 
-router.get('/:id',async (req, res) => {
+router.get('/', async (req, res) => {
+    try {
+        const news = await News.scope('basic').findAll();
+        res.status(200).send({ success: true, data: news });
+    } catch (err) {
+        return res.status(500).send({ success: false, msg: 'Erro ao listar news.' });
+    }
+});
+
+router.get('/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const news = await News.scope('basic').findOne({
+        const news = await News.scope('complete').findOne({
             where: {
                 id: id,
             }
         });
-        res.status(200).send({success: true, data: news });
-    }catch(err){
-        return res.status(500).send({success: false, msg: 'Erro ao listar news.'});
+        res.status(200).send({ success: true, data: news });
+    } catch (err) {
+        return res.status(500).send({ success: false, msg: 'Erro ao listar news.' });
     }
 });
 
