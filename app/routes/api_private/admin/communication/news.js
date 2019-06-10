@@ -23,6 +23,29 @@ router.post('/', [
     }
 })
 
+router.get('/', async (req, res) => {
+    try {
+        const news = await News.scope('complete').findAll();
+        res.status(200).send({ success: true, data: news });
+    } catch (err) {
+        return res.status(500).send({ success: false, msg: 'Erro ao listar news.' });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const news = await News.scope('complete').findOne({
+            where: {
+                id: id,
+            }
+        });
+        res.status(200).send({ success: true, data: news });
+    } catch (err) {
+        return res.status(500).send({ success: false, msg: 'Erro ao listar news.' });
+    }
+});
+
 router.put('/:id', [
     param('id', 'Id não pode ser nulo')
         .exists()
@@ -53,26 +76,15 @@ router.put('/:id', [
     }
 });
 
-router.get('/', async (req, res) => {
-    try {
-        const news = await News.scope('complete').findAll();
-        res.status(200).send({ success: true, data: news });
-    } catch (err) {
-        return res.status(500).send({ success: false, msg: 'Erro ao listar news.' });
-    }
-});
-
-router.get('/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const news = await News.scope('complete').findOne({
-            where: {
-                id: id,
-            }
+        const news = await News.destroy({
+            where: { id: id }
         });
         res.status(200).send({ success: true, data: news });
     } catch (err) {
-        return res.status(500).send({ success: false, msg: 'Erro ao listar news.' });
+        return res.status(500).send({ success: false, msg: 'Erro ao apagar news.' });
     }
 });
 
