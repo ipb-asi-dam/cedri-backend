@@ -21,6 +21,29 @@ router.post('/', [
     }
 })
 
+router.get('/', async (req, res) => {
+    try {
+        const media = await Media.scope('complete').findAll();
+        res.status(200).send({ success: true, data: media });
+    } catch (err) {
+        return res.status(500).send({ success: false, msg: 'Erro ao listar media.' });
+    }
+});
+
+router.get('/:id',async (req, res) => {
+    const id = req.params.id;
+    try {
+        const media = await Media.scope('complete').findOne({
+            where: {
+                id: id,
+            }
+        });
+        res.status(200).send({success: true, data: media });
+    }catch(err){
+        return res.status(500).send({success: false, msg: 'Erro ao listar media.'});
+    }
+});
+
 router.put('/:id', [
     param('id', 'Id não pode ser nulo')
         .exists()
@@ -49,26 +72,15 @@ router.put('/:id', [
     }
 });
 
-router.get('/', async (req, res) => {
-    try {
-        const media = await Media.scope('complete').findAll();
-        res.status(200).send({ success: true, data: media });
-    } catch (err) {
-        return res.status(500).send({ success: false, msg: 'Erro ao listar media.' });
-    }
-});
-
-router.get('/:id',async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const media = await Media.scope('complete').findOne({
-            where: {
-                id: id,
-            }
+        const media = await Media.destroy({
+            where: { id: id }
         });
-        res.status(200).send({success: true, data: media });
-    }catch(err){
-        return res.status(500).send({success: false, msg: 'Erro ao listar media.'});
+        res.status(200).send({ success: true, data: media });
+    } catch (err) {
+        return res.status(500).send({ success: false, msg: 'Erro ao apagar media.' });
     }
 });
 
