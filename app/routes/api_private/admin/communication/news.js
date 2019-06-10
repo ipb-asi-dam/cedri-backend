@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const models = require('../../../../models');
-const { check, validationResult } = require('express-validator/check');
+const { param, check, validationResult } = require('express-validator/check');
 const News = models.news;
 
 router.post('/', [
@@ -23,9 +23,39 @@ router.post('/', [
     }
 })
 
+router.put('/:id', [
+    param('id', 'Id não pode ser nulo')
+        .exists()
+        .isNumeric({ no_symbols: true })
+        .withMessage('Id precisa ser um número'),
+    check('photo')
+        .optional(),
+    check('description')
+        .optional(),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ success: false, errors: errors.array() });
+    }
+    const id = req.params.id;
+    const newsUpdated = req.body;
+    try {
+        await models.sequelize.transaction(async (transaction) => {
+            const news = await News.findByPk(id, { transaction });
+            await News.update(newsUpdated, {
+                where: { id: news.id }
+            }, { transaction });
+        });
+        res.status(200).send({ success: true, msg: 'News atualizado com sucesso!' })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({ success: false, msg: 'Erro ao atualizar News.' });
+    }
+});
+
 router.get('/', async (req, res) => {
     try {
-        const news = await News.scope('basic').findAll();
+        const news = await News.scope('complete').findAll();
         res.status(200).send({ success: true, data: news });
     } catch (err) {
         return res.status(500).send({ success: false, msg: 'Erro ao listar news.' });
