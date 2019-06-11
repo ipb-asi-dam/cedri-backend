@@ -21,5 +21,20 @@ module.exports = function(sequelize, Sequelize){
     News.associate = function(models){
         News.belongsTo(models.communication);
     }
+    News.loadScopes = (models) => {
+        News.addScope('complete', () => {
+            return {
+                attributes: ['id', 'photo', 'description'],
+                required: true,
+                include: [
+                    {
+                        model: models.communication,
+                        attributes: ['name'],
+                        required: true
+                    },
+                ],
+            };
+        });
+    }
     return News;
 }
