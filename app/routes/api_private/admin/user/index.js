@@ -5,6 +5,7 @@ const Investigator = models.investigator,
     User = models.user;
 const mailer = require('../../../../config/global_modules/mailer-wrap');
 const {isAdmin, hasPermission} = require('../../../../middleweres');
+const fs = require('fs')
 
 const shuffle = (word) => {
     let a = word.split("");
