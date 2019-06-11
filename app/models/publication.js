@@ -6,28 +6,56 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.INTEGER(11),
         },
         authors: {
+            type: Sequelize.STRING(1024),
+            allowNull: false,
+        },
+        title: {
             type: Sequelize.STRING(500),
-            allowNull: true,
-        },
-        link: {
-            type: Sequelize.STRING,
-            allowNull: true,
-        },
-        month: {
-            type: Sequelize.INTEGER(2).UNSIGNED,
-            allowNull: true,
+            allowNull: false,
         },
         year: {
             type: Sequelize.INTEGER(4).UNSIGNED,
-            allowNull: true,
-        },
-        title: {
-            type: Sequelize.STRING,
             allowNull: false,
         },
-        pages: {
+        sourceTitle: {
+            type: Sequelize.STRING(500),
+            allowNull: false,
+        },
+        volume: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
+        issue: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
+        artNumber: {
             type: Sequelize.INTEGER,
             allowNull: true,
+        },
+        startPage: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+        },
+        endPage: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+        },
+        url: {
+            type: Sequelize.STRING(3000),
+            allowNull: false,
+        },
+        doi: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },        
+        indexed: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
+        type: {
+            type: Sequelize.ENUM('j', 'b', 'bc', 'p', 'e'),
+            allowNull: false,
         },
     }, {
         paranoid: false,
@@ -37,7 +65,20 @@ module.exports = function(sequelize, Sequelize) {
 
     Publication.associate = function(models){
         Publication.belongsTo(models.investigator);
-        Publication.hasOne(models.book);
     }
+
+    Publication.loadScopes = (models) => {
+        Publication.addScope('complete', () => {
+            return {
+                include: [
+                    {
+                        model: models.investigator,
+                        attributes: ['id', 'name', 'bio', 'isAdmin', 'occupation']
+                    }
+                ]
+            }
+        })
+    }
+
     return Publication;
 }

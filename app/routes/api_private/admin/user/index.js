@@ -63,10 +63,8 @@ router.post('/', [
     try {
         const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
             const userCreated = await User.create(user, {transaction});
-            const investigator = await Investigator.create({
-                ...user,
-                userId: userCreated.id
-            }, {transaction});
+            user.userId = userCreated.id;
+            const investigator = await Investigator.create(user, {transaction});
             await mailer.newUserEmail({name: investigator.name, password: user.password, email: userCreated.email});
             return investigator;
         });
