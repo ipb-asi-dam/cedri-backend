@@ -1,25 +1,31 @@
 module.exports = function (sequelize, Sequelize) {
-  const Event = sequelize.define('event', {
+  const File = sequelize.define('file', {
     id: {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
       autoIncrement: true
     },
-    date: {
-      type: Sequelize.DATE,
+    data: {
+      type: Sequelize.BLOB('medium'),
       allowNull: false
     },
-    local: {
+    mimetype: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    md5: {
+      type: Sequelize.STRING(32),
+      allowNull: false,
+      unique: true
     }
+
   }, {
     paranoid: false,
     timestamps: false,
     freezeTableName: true
   })
-  Event.associate = function (models) {
-    Event.belongsTo(models.communication)
+  File.associate = function (models) {
+    File.hasOne(models.investigator)
   }
-  return Event
+  return File
 }

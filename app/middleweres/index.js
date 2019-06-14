@@ -1,88 +1,57 @@
-const jwt = require('jsonwebtoken');
-const env = process.env.NODE_ENV || 'development';
-const HttpStatus = require('http-status-codes');
-const { API_SECRET } = require('../config/config.json')[env];
-const middlewares = {};
+const jwt = require('jsonwebtoken')
+const env = process.env.NODE_ENV || 'development'
+const HttpStatus = require('http-status-codes')
+const { API_SECRET } = require('../config/config.json')[env]
+const middlewares = {}
 
-middlewares.isValidToken = (req, res, next) => {
-    const token = req.body.token || req.query.token || req.headers['x-access-token'];
+middlewares.isValidToken = async (req, res, next) => {
+  const token = req.body.token || req.query.token || req.headers['x-access-token']
 
-    if (req.method === 'OPTIONS') {
-        return next();
-    }
-    if (token) {
-        jwt.verify(token, API_SECRET, (error, decoded) => {
-            if (error) {
-                return res
-                    .status(403)
-                    .send({success: false, msg: 'Token é inválido! Por favor, tente entrar novamente'});
-            }
-
-            req.user = decoded.data;
-            return next();
-        });
-    } else {
+  if (req.method === 'OPTIONS') {
+    return next()
+  }
+  if (token) {
+    await jwt.verify(token, API_SECRET, (error, decoded) => {
+      if (error) {
         return res
-            .status(HttpStatus.UNAUTHORIZED)
-            .send({success: false, message: 'Nenhum token fornecido!'});
-    }
-};
+          .status(403)
+          .jsend.fail({ message: 'Token é inválido! Por favor, tente entrar novamente' })
+      }
+
+      req.user = decoded
+      return next()
+    })
+  } else {
+    return res
+      .status(HttpStatus.UNAUTHORIZED)
+      .jsend.fail({ message: 'Nenhum token fornecido!' })
+  }
+}
 
 middlewares.isAdmin = (req, res, next) => {
-    const token = req.body.token || req.query.token || req.headers['x-access-token'];
-    if(token){
-        jwt.verify(token, API_SECRET, (error, decoded) => {
-            if (error) {
-                return res
-                    .status(403)
-                    .send({
-                        success: false,
-                        msg: 'Token é inválido! Por favor, tente entrar novamente'
-                    });
-            }
-            if (decoded.data.isAdmin){
-                next();
-            } else {
-                return res
-                    .status(401)
-                    .send({
-                        success: false,
-                        msg: 'Sem permissão para realizar essa ação'
-                    });
-            }
-        });
-    } else {
-        return res
-            .status(HttpStatus.UNAUTHORIZED)
-            .send({success: false, message: 'Nenhum token fornecido!'});
-    }
-
-    
-};
+  if (req.user.isAdmin === true) {
+    next()
+  } else {
+    return res
+      .status(401)
+      .jsend
+      .fail({
+        message: 'Sem permissão para realizar essa ação'
+      })
+  }
+}
 
 middlewares.hasPermission = (req, res, next) => {
-    const token = req.body.token || req.query.token || req.headers['x-access-token'];
-    const id = req.params.id;
-    jwt.verify(token, API_SECRET, (error, decoded) => {
-        if (error) {
-            return res
-                .status(403)
-                .send({
-                    success: false,
-                    msg: 'Token é inválido! Por favor, tente entrar novamente'
-                });
-    }
-        if (!decoded.data.isAdmin && decoded.data.id != id || !decoded.data.isAdmin && req.body.isAdmin !== undefined){
-            return res
-                .status(401)
-                .send({
-                    sucess: false,
-                    msg: "Você não tem permissão realizer essa ação"
-                })
-        } else {
-            return next();
-        }
-    });
-};
+  if (req.user.isAdmin !== true && +req.user.id !== +req.params.id) {
+    return res
+      .status(401)
+      .jsend
+      .fail({
+        message: 'Você não tem permissão realizer essa ação'
+      })
+  } else {
+    return next()
+  }
+}
 
-module.exports = middlewares;
+module.exports = middlewares
