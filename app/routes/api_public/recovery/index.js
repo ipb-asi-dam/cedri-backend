@@ -1,6 +1,5 @@
 const router = require('express').Router()
 const models = require('../../../models')
-const Login = models.login
 const Investigator = models.investigator
 const env = process.env.NODE_ENV || 'development'
 const { API_SECRET } = require('../../../config/config.json')[env]
@@ -23,38 +22,34 @@ router.post('/', [
   }
   try {
     let investigador = await Investigator.findOne({
-      include: [{
-        model: Login,
-        attributes: ['email'],
-        where: {
-          email: req.body.email
-        }
-      }]
-    })
-    if (investigador) {
-      investigador = investigador.dataValues
-      const token = jwt.sign({
-        id: investigador.userId,
-        isAdmin: investigador.isAdmin
-      }, API_SECRET, {
-        expiresIn: '15m'
-      })
-      investigador.token = token
-      try {
-        await mailer.sendRecoveryEmail(investigador)
-        res.status(200)
-          .jsend
-          .success({ message: 'Email enviado com sucesso!' })
-      } catch (err) {
-        return res
-          .status(500)
-          .jsend
-          .error({ message: 'Erro ao enviar email' })
+      where: {
+        email: req.body.email
       }
-    } else {
+    })
+    if (!investigador) {
       return res.status(404)
         .jsend
         .fail({ message: 'Usuário não encontrado' })
+    }
+
+    investigador = investigador.dataValues
+    const token = jwt.sign({
+      id: investigador.id,
+      isAdmin: investigador.isAdmin
+    }, API_SECRET, {
+      expiresIn: '15m'
+    })
+    investigador.token = token
+    try {
+      await mailer.sendRecoveryEmail(investigador)
+      res.status(200)
+        .jsend
+        .success({ message: 'Email enviado com sucesso!' })
+    } catch (err) {
+      return res
+        .status(500)
+        .jsend
+        .error({ message: 'Erro ao enviar email' })
     }
   } catch (err) {
     return res.status(500)

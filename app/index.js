@@ -2,7 +2,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 const models = require('./models')
-const { login: Login, investigator: Investigator } = models
+const { investigator: Investigator } = models
 const cors = require('cors')
 const jsend = require('jsend')
 const fileUpload = require('express-fileupload')
@@ -43,25 +43,19 @@ app.use(function (err, req, res, next) {
 models.sequelize
   .sync({ force: true })
   .then(async () => {
-    const loginAdminUser = await Login.create({
-      password: 'admin123_',
-      email: 'guilherme.ianhez2@gmail.com'
-    })
-    const loginNormaluser = await Login.create({
-      password: 'teste123_',
-      email: 'teste@gmail.com'
-    })
     const investigatorAdmin = await Investigator.create({
       name: 'Joe Admin',
       isAdmin: true,
       bio: 'Bio teste',
-      loginId: loginAdminUser.id
+      password: 'admin123_',
+      email: 'guilherme.ianhez2@gmail.com'
     })
     const investigatorNormal = await Investigator.create({
       name: 'Joe normal',
       isAdmin: false,
       bio: 'Bio teste',
-      loginId: loginNormaluser.id
+      password: 'teste123_',
+      email: 'teste@gmail.com'
     })
     const invCompletoAdmin = await Investigator.scope('complete').findByPk(investigatorAdmin.id)
     const invCompletoNormal = await Investigator.scope('complete').findByPk(investigatorNormal.id)

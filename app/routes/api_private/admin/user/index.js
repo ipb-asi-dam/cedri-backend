@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const models = require('../../../../models')
 const { param, check, validationResult } = require('express-validator/check')
-const { investigator: Investigator, login: Login, file: File } = models
+const { investigator: Investigator, file: File } = models
 const mailer = require('../../../../config/global_modules/mailer-wrap')
 const { isAdmin, hasPermission } = require('../../../../middleweres')
 
@@ -67,16 +67,14 @@ router.post('/', [
   user.password = makePassword(4, 3, 1)
   try {
     const investigadorCreated = await models.sequelize.transaction(async (transaction) => {
-      const loginCreated = await Login.create(user, { transaction })
-      user.loginId = loginCreated.id
       const investigator = await Investigator.create(user, { transaction })
-      await mailer.newUserEmail({ name: investigator.name, password: user.password, email: loginCreated.email })
+      await mailer.newUserEmail(user)
       return investigator
     })
     return res
       .status(201)
       .jsend
-      .success(await Investigator.scope('basic').findOne({ where: { id: investigadorCreated.id } }))
+      .success(await Investigator.scope('basic').findByPk(investigadorCreated.id))
   } catch (err) {
     return res
       .status(500)
@@ -123,7 +121,7 @@ router.put('/:id', [
         message: 'Você não tem permissão realizer essa ação'
       })
   }
-  const avatar = (req.files || {}).avatar
+  const image = (req.files || {}).image
   try {
     await models.sequelize.transaction(async (transaction) => {
       const investigator = await Investigator.findByPk(id)
@@ -133,21 +131,18 @@ router.put('/:id', [
           .jsend
           .fail({ message: 'Usuário não encontrado.' })
       }
-      if (avatar) {
+      if (image) {
         let file
         if (investigator.fileId) {
-          file = await File.update(avatar, {
+          file = await File.update(image, {
             where: { id: investigator.fileId },
             transaction
           })
         } else {
-          file = await File.create(avatar, { transaction })
+          file = await File.create(image, { transaction })
         }
         user.fileId = file.id
       }
-      await Login.update(user, {
-        where: { id: investigator.loginId }
-      }, { transaction })
       return Investigator.update(user, {
         where: { id: investigator.id },
         transaction
@@ -159,13 +154,22 @@ router.put('/:id', [
       .success(await Investigator.scope('complete').findByPk(id))
   } catch (err) {
     console.log(err)
-    return res.status(500).send({ success: false, msg: 'Erro ao atualizar usuário.' })
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao atualizar usuário.' })
   }
 })
 
 router.get('/', isAdmin, async (req, res) => {
   try {
-    const users = await Investigator.scope('complete').findAll()
+    let users
+    const query = req.query
+    if (query.showDeleted === false || query.showDeleted === 'false') {
+      users = await Investigator.scope('complete').findAll()
+    } else {
+      users = await Investigator.scope('complete').findAll({ paranoid: false })
+    }
     return res
       .status(200)
       .jsend
@@ -194,9 +198,68 @@ router.get('/:id', hasPermission, async (req, res) => {
         .fail({ message: 'Usuário não encontrado' })
     }
   } catch (err) {
-    return res.status(500).send({ success: false, msg: 'Erro ao listar usuários.' })
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao listar usuários.' })
   }
 })
+
+router.delete('/:id', isAdmin, async (req, res) => {
+  const id = +req.params.id
+  try {
+    const investigator = await Investigator.destroy({
+      where: {
+        id
+      }
+    })
+    if (!investigator) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Usuário não existe' })
+    }
+    return res
+      .status(200)
+      .jsend
+      .success({ message: 'Usuário deletado com sucesso' })
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao deletar usuário ' + id })
+  }
+})
+
+router.post('/:id/undelete', isAdmin, async (req, res) => {
+  const id = +req.params.id
+  try {
+    const investigator = await Investigator.findByPk(id, { paranoid: false })
+    if (!investigator) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Usuário não existe' })
+    }
+    await Investigator.update({ deletedAt: null }, {
+      where: {
+        id
+      },
+      paranoid: false
+    })
+    return res
+      .status(200)
+      .jsend
+      .success(investigator)
+  } catch (err) {
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao realizar ação de undelete do usuário' + id })
+  }
+})
+
 router.get('/:id/files/', hasPermission, async (req, res) => {
   const id = +req.params.id
   try {

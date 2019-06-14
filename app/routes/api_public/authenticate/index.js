@@ -1,6 +1,5 @@
 const router = require('express').Router()
 const models = require('../../../models')
-const Login = models.login
 const Investigator = models.investigator
 const bcrypt = require('bcryptjs')
 const env = process.env.NODE_ENV || 'development'
@@ -27,14 +26,13 @@ router.post('/', [
   }
   const user = req.body
   try {
-    const loginReturn = await Login.findOne({
+    const investigador = await Investigator.findOne({
       where: {
         email: user.email
       }
     })
-    const match = await bcrypt.compare(user.password, loginReturn.dataValues.password)
+    const match = await bcrypt.compare(user.password, investigador.dataValues.password)
     if (match) {
-      const investigador = await Investigator.findByPk(loginReturn.dataValues.id)
       const token = jwt.sign({
         id: investigador.dataValues.id,
         isAdmin: investigador.dataValues.isAdmin
@@ -52,7 +50,7 @@ router.post('/', [
         .status(401)
         .jsend
         .fail({
-          message: 'Falha ao realizar autenticação, credenciais erradas!'
+          message: 'Falha ao realizar autenticação, tente novamente!'
         })
     }
   } catch (err) {
@@ -60,7 +58,7 @@ router.post('/', [
       .status(403)
       .jsend
       .fail({
-        message: 'Falha ao realizar autenticação!'
+        message: 'Falha ao realizar autenticação, tente novamente!'
       })
   }
 })

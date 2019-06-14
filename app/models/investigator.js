@@ -1,3 +1,5 @@
+const bCrypt = require('bcryptjs')
+
 module.exports = function (sequelize, Sequelize) {
   const Investigator = sequelize.define('investigator', {
     id: {
@@ -21,14 +23,25 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true
+      }
+    },
+    password: {
+      type: Sequelize.STRING,
+      allowNull: false
     }
   }, {
-    paranoid: false,
-    timestamps: false,
+    paranoid: true,
+    timestamps: true,
     freezeTableName: true
   })
   Investigator.associate = function (models) {
-    Investigator.belongsTo(models.login)
     Investigator.hasMany(models.publication)
     Investigator.hasMany(models.project)
     Investigator.belongsTo(models.file)
@@ -36,29 +49,27 @@ module.exports = function (sequelize, Sequelize) {
   Investigator.loadScopes = (models) => {
     Investigator.addScope('complete', () => {
       return {
-        attributes: ['id', 'name', 'bio', 'isAdmin', 'occupation', 'fileId'],
-        required: true,
-        include: [
-          {
-            model: models.login,
-            attributes: ['id', 'email'],
-            required: true
-          }
-        ]
+        attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'] }
       }
     })
     Investigator.addScope('basic', () => {
       return {
-        attributes: ['id', 'name', 'isAdmin', 'fileId'],
-        required: true,
-        include: [{
-          model: models.login,
-          attributes: ['id', 'email'],
-          required: true
-        }
-        ]
+        attributes: ['id', 'name', 'isAdmin', 'fileId', 'email']
       }
     })
   }
+  const generateHash = (password) => {
+    return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null)
+  }
+
+  Investigator.beforeCreate((investigator, options) => {
+    investigator.setDataValue('password', generateHash(investigator.password))
+  })
+
+  Investigator.beforeUpdate((investigator, options) => {
+    if (investigator.password && investigator.changed('password')) {
+      investigator.setDataValue('password', generateHash(investigator.password))
+    }
+  })
   return Investigator
 }
