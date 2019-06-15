@@ -43,10 +43,8 @@ router.post('/', [
     const publication = await Publication.create(pub)
     return res
       .status(201)
-      .send({
-        success: true,
-        data: await Publication.scope('complete').findByPk(publication.id)
-      })
+      .jsend
+      .success(publication)
   } catch (err) {
     return res
       .status(500)
