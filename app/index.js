@@ -48,14 +48,16 @@ models.sequelize
       isAdmin: true,
       bio: 'Bio teste',
       password: 'admin123_',
-      email: 'guilherme.ianhez2@gmail.com'
+      email: 'guilherme.ianhez2@gmail.com',
+      type: 'im'
     })
     const investigatorNormal = await Investigator.create({
       name: 'Joe normal',
       isAdmin: false,
       bio: 'Bio teste',
       password: 'teste123_',
-      email: 'teste@gmail.com'
+      email: 'teste@gmail.com',
+      type: 'im'
     })
     const invCompletoAdmin = await Investigator.scope('complete').findByPk(investigatorAdmin.id)
     const invCompletoNormal = await Investigator.scope('complete').findByPk(investigatorNormal.id)

@@ -35,6 +35,10 @@ module.exports = function (sequelize, Sequelize) {
     password: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    type: {
+      type: Sequelize.ENUM('im', 'rf', 'c', 'vr'),
+      allowNull: false
     }
   }, {
     paranoid: true,
@@ -54,7 +58,7 @@ module.exports = function (sequelize, Sequelize) {
     })
     Investigator.addScope('basic', () => {
       return {
-        attributes: ['id', 'name', 'isAdmin', 'fileId', 'email']
+        attributes: ['id', 'name', 'isAdmin', 'fileId', 'email', 'type']
       }
     })
   }

@@ -30,19 +30,19 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: true
     },
     artNumber: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
       allowNull: true
     },
     startPage: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
       allowNull: true
     },
     endPage: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
       allowNull: true
     },
     url: {
-      type: Sequelize.STRING(3000),
+      type: Sequelize.STRING(2000),
       allowNull: false
     },
     doi: {
@@ -60,7 +60,8 @@ module.exports = function (sequelize, Sequelize) {
   }, {
     paranoid: false,
     timestamps: false,
-    freezeTableName: true
+    freezeTableName: true,
+    charset: 'utf8mb4'
   })
 
   Publication.associate = function (models) {

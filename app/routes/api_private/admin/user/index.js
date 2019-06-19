@@ -105,7 +105,12 @@ router.put('/:id', [
   check('isAdmin')
     .optional()
     .isBoolean()
-    .withMessage('isAdmin precisa ser boolean')
+    .withMessage('isAdmin precisa ser boolean'),
+  check('type')
+    .exists()
+    .withMessage('type não pode ser nulo')
+    .matches('^im$|^rf$|^c$|^vr$')
+    .withMessage('parâmetro type precisa ser (im ou rf ou c ou vr)')
 ], async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
