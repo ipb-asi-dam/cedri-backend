@@ -14,7 +14,7 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: false
     },
     year: {
-      type: Sequelize.INTEGER(4).UNSIGNED,
+      type: Sequelize.DATE,
       allowNull: false
     },
     sourceTitle: {

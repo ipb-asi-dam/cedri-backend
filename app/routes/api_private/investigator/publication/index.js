@@ -13,12 +13,9 @@ router.post('/', [
     .withMessage('title não pode ser nulo')
     .toString(),
   check('year')
-    .exists()
-    .withMessage('year não pode ser nulo')
-    .isNumeric()
-    .withMessage('Campo year precisa ser um número')
-    .isLength({ min: 4, max: 4 })
-    .withMessage('year precisa ter 4 digitos'),
+    .optional()
+    .isISO8601()
+    .withMessage('Formato date errado. Valor esperado YYYY'),
   check('sourceTitle')
     .exists()
     .withMessage('sourceTitle não pode ser nulo')
@@ -107,11 +104,8 @@ router.get('/types/:type', [
 router.put('/:id', [
   check('year')
     .optional()
-    .isNumeric()
-    .withMessage('Campo year precisa ser um número')
-    .isLength({ min: 4, max: 4 })
-    .withMessage('year precisa ter 4 digitos')
-    .toInt()
+    .isISO8601()
+    .withMessage('Formato date errado. Valor esperado YYYY')
 ], async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {

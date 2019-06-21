@@ -32,7 +32,12 @@ router.post('/', [
     .withMessage('type não pode ser nulo')
     .toString()
     .matches('^phd$|^msc$')
-    .withMessage('parâmetro type precisa ser (phd ou msc)')
+    .withMessage('parâmetro type precisa ser (phd ou msc)'),
+  check('date')
+    .optional()
+    .withMessage('Campo date não pode ser nulo')
+    .isISO8601()
+    .withMessage('Formato date errado. Valor esperado (YYYY ou YYYY-MM ou YYYY-MM-DD')
 
 ], async (req, res) => {
   const errors = validationResult(req)

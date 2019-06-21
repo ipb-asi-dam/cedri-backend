@@ -1,39 +1,23 @@
 const router = require('express').Router()
 const { check, validationResult } = require('express-validator/check')
 const { award: Award } = require('../../../../models')
+
 router.post('/', [
   check('title')
     .exists()
     .withMessage('Campo title não pode ser nulo')
     .toString()
     .trim(),
-  check('student')
+  check('prizeWinners')
     .exists()
-    .withMessage('Campo student não pode ser nulo')
+    .withMessage('Campo prizeWinners não pode ser nulo')
     .toString()
     .trim(),
-  check('grade')
+  check('date')
     .exists()
-    .withMessage('Campo grade não pode ser nulo')
-    .toString()
-    .trim(),
-  check('institute')
-    .exists()
-    .withMessage('Campo institute não pode ser nulo')
-    .toString()
-    .trim(),
-  check('supervisors')
-    .exists()
-    .withMessage('Campo supervisors não pode ser nulo')
-    .toString()
-    .trim(),
-  check('type')
-    .exists()
-    .withMessage('type não pode ser nulo')
-    .toString()
-    .matches('^phd$|^msc$')
-    .withMessage('parâmetro type precisa ser (phd ou msc)')
-
+    .withMessage('Campo date não pode ser nulo')
+    .isISO8601()
+    .withMessage('Formato date errado. Valor esperado (YYYY ou YYYY-MM ou YYYY-MM-DD)')
 ], async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -42,19 +26,87 @@ router.post('/', [
       .jsend
       .fail({ errors: errors.array() })
   }
-  const these = req.body
+  const award = req.body
   try {
-    const theseCreated = await Award.create(these)
+    const awardCreated = await Award.create(award)
     return res
       .status(201)
       .jsend
-      .success(theseCreated)
+      .success(awardCreated)
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao inserir these' })
+      .error({ message: 'Erro ao inserir prêmio' })
+  }
+})
+
+router.put('/:id', async (req, res) => {
+  const id = +req.params.id
+  const award = req.body
+  try {
+    const _award = await Award.findByPk(id)
+    if (!_award) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Prêmio com id ' + id + 'não encontrado.' })
+    }
+    await Award.update(award, {
+      where: {
+        id
+      }
+    })
+    return res
+      .status(200)
+      .jsend
+      .success(await Award.findByPk(id))
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao realizer upgrade no prêmio com id' + id })
+  }
+})
+
+router.get('/', async (req, res) => {
+  try {
+    const awards = await Award.findAll()
+    return res
+      .status(200)
+      .jsend
+      .success(awards)
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao retornar todos os prêmios' })
+  }
+})
+
+router.get('/:id', async (req, res) => {
+  const id = +req.params.id
+  try {
+    const award = await Award.findByPk(id)
+    if (!award) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Prêmio de id ' + id + 'não encontrado.' })
+    }
+    return res
+      .status(200)
+      .jsend
+      .success(award)
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao retornar todos os prêmios' })
   }
 })
 

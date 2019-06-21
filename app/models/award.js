@@ -5,13 +5,25 @@ module.exports = function (sequelize, Sequelize) {
       primaryKey: true,
       autoIncrement: true
     },
-    authors: {
-      type: Sequelize.STRING(500),
-      allowNull: false
-    },
     title: {
       type: Sequelize.STRING(1000),
       allowNull: false
+    },
+    prizeWinners: {
+      type: Sequelize.STRING(500),
+      allowNull: false
+    },
+    date: {
+      type: Sequelize.DATE,
+      allowNull: false
+    },
+    address: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    event: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   }, {
     paranoid: false,
