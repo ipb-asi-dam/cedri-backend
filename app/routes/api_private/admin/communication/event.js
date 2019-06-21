@@ -1,9 +1,11 @@
 const router = require('express').Router()
 const models = require('../../../../models')
-const { check, validationResult } = require('express-validator/check')
+const { param, check, validationResult } = require('express-validator/check')
+const { hasPermission } = require('../../../../middleweres')
 const Event = models.event
 
 router.post('/', [
+  hasPermission,
   check('date', 'Atributo date não pode ser nulo')
     .exists(),
   // .isDateURI().withMessage('Atributo date não é uma data'),
@@ -21,6 +23,107 @@ router.post('/', [
     res.status(201).json({ success: true, data: eventCreated })
   } catch (err) {
     res.status(500).json({ success: false, msg: 'Erro ao criar Event' })
+  }
+})
+
+router.get('/', hasPermission, async (req, res) => {
+  try {
+    const event = await Event.scope('complete').findAll()
+    res.status(200).send({ success: true, data: event })
+  } catch (err) {
+    return res.status(500).send({ success: false, msg: 'Erro ao listar event.' })
+  }
+})
+
+router.get('/:id', hasPermission, async (req, res) => {
+  const id = +req.params.id
+  try {
+    const user = await Event.scope('complete').findByPk(id)
+    if (user) {
+      return res
+        .status(200)
+        .jsend
+        .success(user)
+    } else {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Event não encontrado' })
+    }
+  } catch (err) {
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao listar events.' })
+  }
+})
+
+router.put('/:id', [
+  hasPermission,
+  param('id', 'Id não pode ser nulo')
+    .exists()
+    .isNumeric({ no_symbols: true })
+    .withMessage('Id precisa ser um número'),
+  check('date')
+    .optional(),
+  check('local')
+    .optional(),
+  check('communicationId')
+    .optional()
+], async (req, res) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ success: false, errors: errors.array() })
+  }
+  const id = req.params.id
+  const user = req.body
+  if (req.user.isAdmin !== true && user.isAdmin === true) {
+    return res
+      .status(401)
+      .jsend
+      .fail({
+        message: 'Você não tem permissão realizer essa ação'
+      })
+  }
+  const eventUpdated = req.body
+  try {
+    await models.sequelize.transaction(async (transaction) => {
+      const event = await Event.findByPk(id, { transaction })
+      await Event.update(eventUpdated, {
+        where: { id: event.id }
+      }, { transaction })
+    })
+    res.status(200).send({ success: true, msg: 'Event atualizado com sucesso!' })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({ success: false, msg: 'Erro ao atualizar Event.' })
+  }
+})
+
+router.delete('/:id', hasPermission, async (req, res) => {
+  const id = +req.params.id
+  try {
+    const event = await Event.destroy({
+      where: {
+        id
+      }
+    })
+    if (!event) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Event não existe' })
+    }
+    return res
+      .status(200)
+      .jsend
+      .success({ message: 'Event apagado com sucesso' })
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao apagar event ' + id })
   }
 })
 
