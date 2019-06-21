@@ -2,6 +2,7 @@ const router = require('express').Router()
 const models = require('../../../../models')
 const { param, check, validationResult } = require('express-validator/check')
 const Publication = models.publication
+const { hasPermission } = require('../../../../middleweres')
 
 router.post('/', [
   check('authors')
@@ -102,6 +103,7 @@ router.get('/types/:type', [
 })
 
 router.put('/:id', [
+  hasPermission,
   check('year')
     .optional()
     .isISO8601()

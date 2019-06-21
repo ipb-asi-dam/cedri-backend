@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const { check, validationResult } = require('express-validator/check')
 const { award: Award } = require('../../../../models')
+const { hasPermission } = require('../../../../middleweres')
 
 router.post('/', [
   check('title')
@@ -42,7 +43,7 @@ router.post('/', [
   }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', hasPermission, async (req, res) => {
   const id = +req.params.id
   const award = req.body
   try {

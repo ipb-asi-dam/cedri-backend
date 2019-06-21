@@ -1,6 +1,8 @@
 const router = require('express').Router()
 const { check, validationResult } = require('express-validator/check')
 const { these: These } = require('../../../../models')
+const { hasPermission } = require('../../../../middleweres')
+
 router.post('/', [
   check('title')
     .exists()
@@ -64,7 +66,7 @@ router.post('/', [
   }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', hasPermission, async (req, res) => {
   const id = +req.params.id
   const these = req.body
   try {

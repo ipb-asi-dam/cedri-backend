@@ -2,6 +2,7 @@ const router = require('express').Router()
 const { check, validationResult } = require('express-validator/check')
 const models = require('../../../../models')
 const { software: Software, file: File } = models
+const { hasPermission } = require('../../../../middleweres')
 
 router.post('/', [
   check('title')
@@ -45,7 +46,7 @@ router.post('/', [
   }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', hasPermission, async (req, res) => {
   const id = +req.params.id
   const software = req.body
   try {

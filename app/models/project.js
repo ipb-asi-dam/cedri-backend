@@ -5,25 +5,42 @@ module.exports = function (sequelize, Sequelize) {
       primaryKey: true,
       autoIncrement: true
     },
-    photo: {
-      type: Sequelize.STRING,
-      allowNull: true
-    },
     title: {
       type: Sequelize.STRING,
       allowNull: false
     },
     description: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: false
     },
-    financedBy: {
+    fundedBy: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: false
     },
     consortium: {
       type: Sequelize.STRING,
       allowNull: true
+    },
+    startDate: {
+      type: Sequelize.DATE,
+      allowNull: false
+    },
+    endDate: {
+      type: Sequelize.DATE,
+      allowNull: false
+    },
+    url: {
+      type: Sequelize.STRING(2000),
+      allowNull: true
+    },
+    isAccepted: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+    type: {
+      type: Sequelize.ENUM('international', 'national', 'other'),
+      allowNull: false
     }
   }, {
     paranoid: false,
@@ -33,6 +50,7 @@ module.exports = function (sequelize, Sequelize) {
   })
   Project.associate = function (models) {
     Project.belongsTo(models.investigator)
+    Project.belongsTo(models.file)
   }
   return Project
 }

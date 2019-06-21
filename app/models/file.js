@@ -27,6 +27,7 @@ module.exports = function (sequelize, Sequelize) {
   File.associate = function (models) {
     File.hasOne(models.investigator)
     File.hasOne(models.software)
+    File.hasOne(models.project)
   }
   File.loadScopes = (models) => {
     File.addScope('basic', () => {
