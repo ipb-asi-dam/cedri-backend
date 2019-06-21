@@ -19,7 +19,6 @@ middlewares.removeNull = async (req, res, next) => {
 }
 middlewares.isValidToken = async (req, res, next) => {
   const token = req.body.token || req.query.token || req.headers['x-access-token']
-
   if (req.method === 'OPTIONS') {
     return next()
   }
@@ -32,6 +31,9 @@ middlewares.isValidToken = async (req, res, next) => {
       }
 
       req.user = decoded
+      if (req.method === 'POST') {
+        req.user.investigatorId = req.user.id
+      }
       return next()
     })
   } else {

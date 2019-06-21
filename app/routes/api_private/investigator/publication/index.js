@@ -107,7 +107,12 @@ router.put('/:id', [
   check('year')
     .optional()
     .isISO8601()
-    .withMessage('Formato date errado. Valor esperado YYYY')
+    .withMessage('Formato date errado. Valor esperado YYYY'),
+  check('type')
+    .optional()
+    .toString()
+    .matches('^b$|^bc$|^j$|^p$|^e$')
+    .withMessage('parâmetro type precisa ser (j ou b ou bc ou j ou p ou e)')
 ], async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
