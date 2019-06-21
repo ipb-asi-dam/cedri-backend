@@ -46,7 +46,7 @@ router.post('/', [
     .toString()
     .trim()
     .isEmail()
-    .withMessage('O campo email está errado'),
+    .withMessage('O campo email é inválido'),
   check('name', 'Atributo name não pode ser nulo')
     .exists()
     .isString()
@@ -54,7 +54,13 @@ router.post('/', [
   check('isAdmin', 'Atributo isAdmin não pode ser nulo')
     .exists()
     .isBoolean()
-    .withMessage('isAdmin precisa ser booleano')
+    .withMessage('isAdmin precisa ser booleano'),
+  check('type')
+    .exists()
+    .withMessage('type não pode ser nulo')
+    .matches('^im$|^rf$|^c$|^vr$')
+    .withMessage('parâmetro type precisa ser (im ou rf ou c ou vr)')
+
 ], async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -99,16 +105,12 @@ router.put('/:id', [
     .isLength({ min: 8, max: 255 })
     .withMessage('Password precisa ter no minimo 8 e no máximo 255 caracteres')
     .optional(),
-  check('occupation')
-    .toString()
-    .optional(),
   check('isAdmin')
     .optional()
     .isBoolean()
     .withMessage('isAdmin precisa ser boolean'),
   check('type')
-    .exists()
-    .withMessage('type não pode ser nulo')
+    .optional()
     .matches('^im$|^rf$|^c$|^vr$')
     .withMessage('parâmetro type precisa ser (im ou rf ou c ou vr)')
 ], async (req, res) => {

@@ -28,7 +28,8 @@ module.exports = function (sequelize, Sequelize) {
   }, {
     paranoid: false,
     timestamps: false,
-    freezeTableName: true
+    freezeTableName: true,
+    charset: 'utf8mb4'
   })
   Project.associate = function (models) {
     Project.belongsTo(models.investigator)

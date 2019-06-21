@@ -25,11 +25,12 @@ module.exports = function (sequelize, Sequelize) {
   })
   File.associate = function (models) {
     File.hasOne(models.investigator)
+    File.hasOne(models.software)
   }
   File.loadScopes = (models) => {
     File.addScope('basic', () => {
       return {
-        attributes: ['id', 'md5', 'mimetype']
+        attributes: { exclude: ['data'] }
       }
     })
   }

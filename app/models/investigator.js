@@ -43,7 +43,8 @@ module.exports = function (sequelize, Sequelize) {
   }, {
     paranoid: true,
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    charset: 'utf8mb4'
   })
   Investigator.associate = function (models) {
     Investigator.hasMany(models.publication)

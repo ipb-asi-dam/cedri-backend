@@ -1,12 +1,16 @@
 module.exports = function (sequelize, Sequelize) {
-  const Media = sequelize.define('media', {
+  const Award = sequelize.define('award', {
     id: {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
       autoIncrement: true
     },
-    description: {
-      type: Sequelize.STRING,
+    authors: {
+      type: Sequelize.STRING(500),
+      allowNull: false
+    },
+    title: {
+      type: Sequelize.STRING(1000),
       allowNull: false
     }
   }, {
@@ -15,8 +19,9 @@ module.exports = function (sequelize, Sequelize) {
     freezeTableName: true,
     charset: 'utf8mb4'
   })
-  Media.associate = function (models) {
-    Media.belongsTo(models.communication)
+  Award.associate = function (models) {
+    Award.belongsTo(models.investigator)
   }
-  return Media
+
+  return Award
 }

@@ -71,6 +71,10 @@ module.exports = function (sequelize, Sequelize) {
   Publication.loadScopes = (models) => {
     Publication.addScope('complete', () => {
       return {
+
+        attributes: {
+          exclude: [ 'investigatorId' ]
+        },
         include: [
           {
             model: models.investigator,

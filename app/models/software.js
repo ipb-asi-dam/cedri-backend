@@ -1,12 +1,16 @@
 module.exports = function (sequelize, Sequelize) {
-  const Media = sequelize.define('media', {
+  const Software = sequelize.define('software', {
     id: {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
       autoIncrement: true
     },
+    title: {
+      type: Sequelize.STRING(1000),
+      allowNull: false
+    },
     description: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(1024),
       allowNull: false
     }
   }, {
@@ -15,8 +19,10 @@ module.exports = function (sequelize, Sequelize) {
     freezeTableName: true,
     charset: 'utf8mb4'
   })
-  Media.associate = function (models) {
-    Media.belongsTo(models.communication)
+  Software.associate = function (models) {
+    Software.belongsTo(models.investigator)
+    Software.belongsTo(models.file)
   }
-  return Media
+
+  return Software
 }

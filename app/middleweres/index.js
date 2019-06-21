@@ -19,6 +19,7 @@ middlewares.isValidToken = async (req, res, next) => {
       }
 
       req.user = decoded
+      req.body.investigatorId = req.user.id
       return next()
     })
   } else {
