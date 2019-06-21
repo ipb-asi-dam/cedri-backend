@@ -56,7 +56,7 @@ router.put('/:id', async (req, res) => {
       }
     })
     return res
-      .status(201)
+      .status(200)
       .jsend
       .success(await Patent.findByPk(id))
   } catch (err) {

@@ -54,7 +54,7 @@ router.put('/:id', async (req, res) => {
       return res
         .status(404)
         .jsend
-        .fail({ message: 'Software com id ' + id + ' não existe' })
+        .fail({ message: 'Software com id ' + id + ' não encontrado' })
     }
     await Software.update(software, {
       where: {
@@ -62,7 +62,7 @@ router.put('/:id', async (req, res) => {
       }
     })
     return res
-      .status(201)
+      .status(200)
       .jsend
       .success(await Software.findByPk(id))
   } catch (err) {

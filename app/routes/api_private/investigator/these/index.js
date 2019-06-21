@@ -59,4 +59,71 @@ router.post('/', [
   }
 })
 
+router.put('/:id', async (req, res) => {
+  const id = +req.params.id
+  const these = req.body
+  try {
+    const _these = await These.findByPk(id)
+    if (!_these) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'These com id ' + id + 'não encontrada' })
+    }
+    await These.update(these, {
+      where: {
+        id
+      }
+    })
+    return res
+      .status(200)
+      .jsend
+      .success(await These.findByPk(id))
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao editar these com id ' + id })
+  }
+})
+
+router.get('/', async (req, res) => {
+  try {
+    const theses = await These.findAll()
+    return res
+      .status(200)
+      .jsend
+      .success(theses)
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao retornar theses' })
+  }
+})
+
+router.get('/:id', async (req, res) => {
+  const id = +req.params.id
+  try {
+    const _these = await These.findByPk(id)
+    if (!_these) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'These com id ' + id + 'não encontrada' })
+    }
+    return res
+      .status(200)
+      .jsend
+      .success(_these)
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao retornar these com id ' + id })
+  }
+})
 module.exports = router
