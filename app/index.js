@@ -7,6 +7,7 @@ const cors = require('cors')
 const jsend = require('jsend')
 const fileUpload = require('express-fileupload')
 const app = express()
+const middleware = require('../app/middleweres')
 const fileUploadOptions = {
   abortOnLimit: true,
   safeFileNames: true, // remove hifens etc...
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(jsend.middleware)
 app.use(fileUpload(fileUploadOptions))
+app.use(middleware.removeNull)
 // middleware para validar token está dentro de routes
 app.use(require('./routes'))
 

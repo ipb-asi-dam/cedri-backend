@@ -15,6 +15,7 @@ module.exports = function (sequelize, Sequelize) {
     },
     md5: {
       type: Sequelize.STRING(32),
+      primaryKey: true,
       allowNull: false
     }
 
