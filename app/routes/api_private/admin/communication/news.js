@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const models = require('../../../../models')
 const { param, check, validationResult } = require('express-validator/check')
+const { file: File } = models
 const { hasPermission } = require('../../../../middleweres')
 const News = models.news
 
@@ -12,14 +13,39 @@ router.post('/', [
 ], async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(422).json({ success: false, errors: errors.array() })
+    return res
+      .status(422)
+      .jsend
+      .fail({ errors: errors.array() })
   }
-
+  const news = req.body
+  const image = (req.files || {}).image
   try {
-    const newsCreated = await News.create(req.body)
-    res.status(201).json({ success: true, data: newsCreated })
+    const newsCreated = await models.sequelize.transaction(async (transaction) => {
+      if (image) {
+        let file
+        if (news.fileId) {
+          file = await File.update(image, {
+            where: { id: news.fileId },
+            transaction
+          })
+        } else {
+          file = await File.create(image, { transaction })
+        }
+        news.fileId = file.id
+      }
+      const news1 = await News.create(news, { transaction })
+      return news1
+    })
+    return res
+      .status(201)
+      .jsend
+      .success(await News.scope('complete').findByPk(newsCreated.id))
   } catch (err) {
-    res.status(500).json({ success: false, msg: 'Erro ao criar News' })
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao criar news' })
   }
 })
 
@@ -79,17 +105,45 @@ router.put('/:id', [
       })
   }
   const newsUpdated = req.body
+  const image = (req.files || {}).image
+  console.log((req.files || {}))
+  console.log(JSON.stringify((req.files || {}).image))
   try {
     await models.sequelize.transaction(async (transaction) => {
-      const news = await News.findByPk(id, { transaction })
-      await News.update(newsUpdated, {
-        where: { id: news.id }
-      }, { transaction })
+      const news = await News.findByPk(id)
+      if (!news) {
+        return res
+          .status(404)
+          .jsend
+          .fail({ message: 'News não encontrado.' })
+      }
+      if (image) {
+        let file
+        if (news.fileId) {
+          file = await File.update(image, {
+            where: { id: news.fileId },
+            transaction
+          })
+        } else {
+          file = await File.create(image, { transaction })
+        }
+        news.fileId = file.id
+      }
+      return News.update(newsUpdated, {
+        where: { id: news.id },
+        transaction
+      })
     })
-    res.status(200).send({ success: true, msg: 'News atualizado com sucesso!' })
+    return res
+      .status(200)
+      .jsend
+      .success(await News.scope('complete').findByPk(id))
   } catch (err) {
     console.log(err)
-    return res.status(500).send({ success: false, msg: 'Erro ao atualizar News.' })
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao atualizar news.' })
   }
 })
 
@@ -128,7 +182,7 @@ router.get('/:id/files/', hasPermission, async (req, res) => {
       return res
         .status(404)
         .jsend
-        .fail({ message: 'Usuário não encontrado' })
+        .fail({ message: 'News não encontrado' })
     }
     const file = await File.findByPk(news.fileId)
     return res
@@ -150,7 +204,7 @@ router.get('/:id/files/:hash', hasPermission, async (req, res) => {
       return res
         .status(404)
         .jsend
-        .fail({ message: 'Usuário não encontrado' })
+        .fail({ message: 'News não encontrado' })
     }
     const file = await File.findOne({ where: { md5: hash } })
     return res

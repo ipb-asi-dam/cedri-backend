@@ -21,14 +21,11 @@ module.exports = function (sequelize, Sequelize) {
   News.loadScopes = (models) => {
     News.addScope('complete', () => {
       return {
-        attributes: ['id', 'description'],
-        required: true,
-        include: [
-          {
-            model: models.communication,
-            attributes: ['name'],
-            required: true
-          }
+        attributes: [
+          'id',
+          'description',
+          'communicationId',
+          'fileId'
         ]
       }
     })
