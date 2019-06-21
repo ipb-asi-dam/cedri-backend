@@ -38,12 +38,12 @@ router.get('/', hasPermission, async (req, res) => {
 router.get('/:id', hasPermission, async (req, res) => {
   const id = +req.params.id
   try {
-    const user = await Event.scope('complete').findByPk(id)
-    if (user) {
+    const event = await Event.scope('complete').findByPk(id)
+    if (event) {
       return res
         .status(200)
         .jsend
-        .success(user)
+        .success(event)
     } else {
       return res
         .status(404)

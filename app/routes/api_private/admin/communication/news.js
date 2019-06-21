@@ -1,12 +1,11 @@
 const router = require('express').Router()
 const models = require('../../../../models')
 const { param, check, validationResult } = require('express-validator/check')
-const { isAdmin, hasPermission } = require('../../../../middleweres')
+const { hasPermission } = require('../../../../middleweres')
 const News = models.news
 
 router.post('/', [
-  check('photo', 'Atributo photo não pode ser nulo')
-    .exists(),
+  hasPermission,
   check('description', 'Atributo description não pode ser nulo')
     .exists()
 
@@ -24,7 +23,7 @@ router.post('/', [
   }
 })
 
-router.get('/', async (req, res) => {
+router.get('/', hasPermission, async (req, res) => {
   try {
     const news = await News.scope('complete').findAll()
     res.status(200).send({ success: true, data: news })
@@ -33,27 +32,35 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.get('/:id', async (req, res) => {
-  const id = req.params.id
+router.get('/:id', hasPermission, async (req, res) => {
+  const id = +req.params.id
   try {
-    const news = await News.scope('complete').findOne({
-      where: {
-        id: id
-      }
-    })
-    res.status(200).send({ success: true, data: news })
+    const news = await News.scope('complete').findByPk(id)
+    if (news) {
+      return res
+        .status(200)
+        .jsend
+        .success(news)
+    } else {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'News não encontrado' })
+    }
   } catch (err) {
-    return res.status(500).send({ success: false, msg: 'Erro ao listar news.' })
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao listar news.' })
   }
 })
 
 router.put('/:id', [
+  hasPermission,
   param('id', 'Id não pode ser nulo')
     .exists()
     .isNumeric({ no_symbols: true })
     .withMessage('Id precisa ser um número'),
-  check('photo')
-    .optional(),
   check('description')
     .optional()
 ], async (req, res) => {
@@ -62,6 +69,15 @@ router.put('/:id', [
     return res.status(422).json({ success: false, errors: errors.array() })
   }
   const id = req.params.id
+  const user = req.body
+  if (req.user.isAdmin !== true && user.isAdmin === true) {
+    return res
+      .status(401)
+      .jsend
+      .fail({
+        message: 'Você não tem permissão realizer essa ação'
+      })
+  }
   const newsUpdated = req.body
   try {
     await models.sequelize.transaction(async (transaction) => {
@@ -77,15 +93,30 @@ router.put('/:id', [
   }
 })
 
-router.delete('/:id', async (req, res) => {
-  const id = req.params.id
+router.delete('/:id', hasPermission, async (req, res) => {
+  const id = +req.params.id
   try {
     const news = await News.destroy({
-      where: { id: id }
+      where: {
+        id
+      }
     })
-    res.status(200).send({ success: true, data: news })
+    if (!news) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'News não existe' })
+    }
+    return res
+      .status(200)
+      .jsend
+      .success({ message: 'News apagado com sucesso' })
   } catch (err) {
-    return res.status(500).send({ success: false, msg: 'Erro ao apagar news.' })
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao apagar news ' + id })
   }
 })
 

@@ -16,6 +16,7 @@ module.exports = function (sequelize, Sequelize) {
   })
   Media.associate = function (models) {
     Media.belongsTo(models.communication)
+    Media.belongsTo(models.file)
   }
   Media.loadScopes = (models) => {
     Media.addScope('complete', () => {

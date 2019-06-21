@@ -5,10 +5,6 @@ module.exports = function (sequelize, Sequelize) {
       primaryKey: true,
       autoIncrement: true
     },
-    photo: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
     description: {
       type: Sequelize.STRING,
       allowNull: false
@@ -20,11 +16,12 @@ module.exports = function (sequelize, Sequelize) {
   })
   News.associate = function (models) {
     News.belongsTo(models.communication)
+    News.belongsTo(models.file)
   }
   News.loadScopes = (models) => {
     News.addScope('complete', () => {
       return {
-        attributes: ['id', 'photo', 'description'],
+        attributes: ['id', 'description'],
         required: true,
         include: [
           {

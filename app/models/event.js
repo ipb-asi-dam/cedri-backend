@@ -20,7 +20,6 @@ module.exports = function (sequelize, Sequelize) {
   })
   Event.associate = function (models) {
     Event.belongsTo(models.communication)
-    Event.belongsTo(models.file)
   }
   Event.loadScopes = (models) => {
     Event.addScope('complete', () => {
