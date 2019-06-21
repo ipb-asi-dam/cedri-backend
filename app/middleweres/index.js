@@ -32,7 +32,7 @@ middlewares.isValidToken = async (req, res, next) => {
 
       req.user = decoded
       if (req.method === 'POST') {
-        req.user.investigatorId = req.user.id
+        req.body.investigatorId = req.user.id
       }
       return next()
     })

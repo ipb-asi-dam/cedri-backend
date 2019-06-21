@@ -5,9 +5,9 @@ module.exports = function (sequelize, Sequelize) {
       primaryKey: true,
       autoIncrement: true
     },
-    photo: {
-      type: Sequelize.STRING,
-      allowNull: false
+    url: {
+      type: Sequelize.STRING(2000),
+      allowNull: true
     },
     description: {
       type: Sequelize.STRING,

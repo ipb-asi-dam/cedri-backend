@@ -27,24 +27,24 @@ router.post('/', [
 router.get('/', async (req, res) => {
   try {
     const event = await Event.scope('complete').findAll()
-        res.status(200).send({ success: true, data: event })
-    } catch (err) {
+    return res.status(200).send({ success: true, data: event })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao listar event.' })
-    }
+  }
 })
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id
-    try {
+  try {
     const event = await Event.scope('complete').findOne({
       where: {
         id: id
       }
     })
-        res.status(200).send({ success: true, data: event })
-    } catch (err) {
+    return res.status(200).send({ success: true, data: event })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao listar Event.' })
-    }
+  }
 })
 
 router.put('/:id', [
@@ -60,35 +60,35 @@ router.put('/:id', [
     .optional()
 ], async (req, res) => {
   const errors = validationResult(req)
-    if (!errors.isEmpty()) {
+  if (!errors.isEmpty()) {
     return res.status(422).json({ success: false, errors: errors.array() })
-    }
+  }
   const id = req.params.id
-    const eventUpdated = req.body
-    try {
+  const eventUpdated = req.body
+  try {
     await models.sequelize.transaction(async (transaction) => {
       const event = await Event.findByPk(id, { transaction })
-            await Event.update(eventUpdated, {
+      await Event.update(eventUpdated, {
         where: { id: event.id }
       }, { transaction })
-        })
-        res.status(200).send({ success: true, msg: 'Event atualizado com sucesso!' })
+    })
+    return res.status(200).send({ success: true, msg: 'Event atualizado com sucesso!' })
   } catch (err) {
     console.log(err)
     return res.status(500).send({ success: false, msg: 'Erro ao atualizar Event.' })
-    }
+  }
 })
 
 router.delete('/:id', async (req, res) => {
   const id = req.params.id
-    try {
+  try {
     const event = await Event.destroy({
       where: { id: id }
     })
-        res.status(200).send({ success: true, data: event })
-    } catch (err) {
+    return res.status(200).send({ success: true, data: event })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao apagar event.' })
-    }
+  }
 })
 
 module.exports = router

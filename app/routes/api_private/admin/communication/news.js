@@ -26,24 +26,24 @@ router.post('/', [
 router.get('/', async (req, res) => {
   try {
     const news = await News.scope('complete').findAll()
-        res.status(200).send({ success: true, data: news })
-    } catch (err) {
+    return res.status(200).send({ success: true, data: news })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao listar news.' })
-    }
+  }
 })
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id
-    try {
+  try {
     const news = await News.scope('complete').findOne({
       where: {
         id: id
       }
     })
-        res.status(200).send({ success: true, data: news })
-    } catch (err) {
+    res.status(200).send({ success: true, data: news })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao listar news.' })
-    }
+  }
 })
 
 router.put('/:id', [
@@ -57,35 +57,35 @@ router.put('/:id', [
     .optional()
 ], async (req, res) => {
   const errors = validationResult(req)
-    if (!errors.isEmpty()) {
+  if (!errors.isEmpty()) {
     return res.status(422).json({ success: false, errors: errors.array() })
-    }
+  }
   const id = req.params.id
-    const newsUpdated = req.body
-    try {
+  const newsUpdated = req.body
+  try {
     await models.sequelize.transaction(async (transaction) => {
       const news = await News.findByPk(id, { transaction })
-            await News.update(newsUpdated, {
+      await News.update(newsUpdated, {
         where: { id: news.id }
       }, { transaction })
-        })
-        res.status(200).send({ success: true, msg: 'News atualizado com sucesso!' })
+    })
+    res.status(200).send({ success: true, msg: 'News atualizado com sucesso!' })
   } catch (err) {
     console.log(err)
     return res.status(500).send({ success: false, msg: 'Erro ao atualizar News.' })
-    }
+  }
 })
 
 router.delete('/:id', async (req, res) => {
   const id = req.params.id
-    try {
+  try {
     const news = await News.destroy({
       where: { id: id }
     })
-        res.status(200).send({ success: true, data: news })
-    } catch (err) {
+    res.status(200).send({ success: true, data: news })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao apagar news.' })
-    }
+  }
 })
 
 module.exports = router

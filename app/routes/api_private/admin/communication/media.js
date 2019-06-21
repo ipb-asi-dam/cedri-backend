@@ -24,24 +24,24 @@ router.post('/', [
 router.get('/', async (req, res) => {
   try {
     const media = await Media.scope('complete').findAll()
-        res.status(200).send({ success: true, data: media })
-    } catch (err) {
+    res.status(200).send({ success: true, data: media })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao listar media.' })
-    }
+  }
 })
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id
-    try {
+  try {
     const media = await Media.scope('complete').findOne({
       where: {
         id: id
       }
     })
-        res.status(200).send({ success: true, data: media })
-    }catch (err) {
+    res.status(200).send({ success: true, data: media })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao listar media.' })
-    }
+  }
 })
 
 router.put('/:id', [
@@ -53,35 +53,35 @@ router.put('/:id', [
     .optional()
 ], async (req, res) => {
   const errors = validationResult(req)
-    if (!errors.isEmpty()) {
+  if (!errors.isEmpty()) {
     return res.status(422).json({ success: false, errors: errors.array() })
-    }
+  }
   const id = req.params.id
-    const mediaUpdated = req.body
-    try {
+  const mediaUpdated = req.body
+  try {
     await models.sequelize.transaction(async (transaction) => {
       const media = await Media.findByPk(id, { transaction })
-            await Media.update(mediaUpdated, {
+      await Media.update(mediaUpdated, {
         where: { id: media.id }
       }, { transaction })
-        })
-        res.status(200).send({ success: true, msg: 'Media atualizado com sucesso!' })
+    })
+    res.status(200).send({ success: true, msg: 'Media atualizado com sucesso!' })
   } catch (err) {
     console.log(err)
     return res.status(500).send({ success: false, msg: 'Erro ao atualizar Media.' })
-    }
+  }
 })
 
 router.delete('/:id', async (req, res) => {
   const id = req.params.id
-    try {
+  try {
     const media = await Media.destroy({
       where: { id: id }
     })
-        res.status(200).send({ success: true, data: media })
-    } catch (err) {
+    res.status(200).send({ success: true, data: media })
+  } catch (err) {
     return res.status(500).send({ success: false, msg: 'Erro ao apagar media.' })
-    }
+  }
 })
 
 module.exports = router
