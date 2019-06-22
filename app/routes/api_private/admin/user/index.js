@@ -203,16 +203,11 @@ router.post('/:id/undelete', isAdmin, async (req, res) => {
         .jsend
         .fail({ message: 'Usuário não existe' })
     }
-    await Investigator.update({ deletedAt: null }, {
-      where: {
-        id
-      },
-      paranoid: false
-    })
+    investigator.restore()
     return res
       .status(200)
       .jsend
-      .success(investigator)
+      .success({ message: 'Usuário com id ' + id + ' restaurado' })
   } catch (err) {
     return res
       .status(500)
