@@ -19,30 +19,22 @@ const templates = {
 }
 
 mailer.sendRecoveryEmail = async (investigator) => {
-  try {
-    const email = {
-      html: await ejs.renderFile(templates.recovery, investigator),
-      subject: `Recuperação de senha`,
-      from: mailerConfig.username,
-      to: investigator.user.email
-    }
-    return transporter.sendMail(email)
-  } catch (err) {
-    console.log(err)
+  const email = {
+    html: await ejs.renderFile(templates.recovery, investigator),
+    subject: `Recuperação de senha`,
+    from: mailerConfig.username,
+    to: investigator.email
   }
+  return transporter.sendMail(email)
 }
 
 mailer.newUserEmail = async (investigator) => {
-  try {
-    const email = {
-      html: await ejs.renderFile(templates.newUser, investigator),
-      subject: `Bem vindo ao CEDRI!`,
-      from: mailerConfig.username,
-      to: investigator.email
-    }
-    return transporter.sendMail(email)
-  } catch (err) {
-    console.log(err)
+  const email = {
+    html: await ejs.renderFile(templates.newUser, investigator),
+    subject: `Bem vindo ao CEDRI!`,
+    from: mailerConfig.username,
+    to: investigator.email
   }
+  return transporter.sendMail(email)
 }
 module.exports = mailer
