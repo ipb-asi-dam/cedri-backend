@@ -40,11 +40,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.ENUM('im', 'rf', 'c', 'vr'),
       allowNull: false
     }
-  }, {
-    paranoid: true,
-    timestamps: true,
-    freezeTableName: true,
-    charset: 'utf8mb4'
   })
   Investigator.associate = function (models) {
     Investigator.hasMany(models.publication)

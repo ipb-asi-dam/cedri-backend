@@ -17,11 +17,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING(1400),
       allowNull: true
     }
-  }, {
-    paranoid: true,
-    timestamps: true,
-    freezeTableName: true,
-    charset: 'utf8mb4'
   })
   Patent.associate = function (models) {
     Patent.belongsTo(models.investigator)

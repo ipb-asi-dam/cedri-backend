@@ -13,11 +13,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING(1024),
       allowNull: false
     }
-  }, {
-    paranoid: true,
-    timestamps: true,
-    freezeTableName: true,
-    charset: 'utf8mb4'
   })
   Software.associate = function (models) {
     Software.belongsTo(models.investigator)

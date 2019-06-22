@@ -19,10 +19,6 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: false
     }
 
-  }, {
-    paranoid: true,
-    timestamps: true,
-    freezeTableName: true
   })
   File.associate = function (models) {
     File.hasOne(models.investigator)

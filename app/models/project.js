@@ -42,11 +42,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.ENUM('international', 'national', 'other'),
       allowNull: false
     }
-  }, {
-    paranoid: true,
-    timestamps: true,
-    freezeTableName: true,
-    charset: 'utf8mb4'
   })
   Project.associate = function (models) {
     Project.belongsTo(models.investigator)

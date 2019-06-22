@@ -38,11 +38,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.ENUM('phd', 'msc'),
       allowNull: false
     }
-  }, {
-    paranoid: true,
-    timestamps: true,
-    freezeTableName: true,
-    charset: 'utf8mb4'
   })
   These.associate = function (models) {
     These.belongsTo(models.investigator)

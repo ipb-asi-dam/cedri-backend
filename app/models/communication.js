@@ -13,10 +13,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: true
     },
-    type: {
-      type: Sequelize.ENUM('news', 'event', 'media'),
-      allowNull: false
-    },
     startDate: {
       type: Sequelize.DATE,
       allowNull: true
@@ -29,11 +25,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.ENUM('news', 'event', 'media'),
       allowNull: false
     }
-  }, {
-    paranoid: true,
-    timestamps: true,
-    freezeTableName: true,
-    charset: 'utf8mb4'
   })
   Communication.associate = function (models) {
     Communication.belongsToMany(models.file, {

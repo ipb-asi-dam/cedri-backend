@@ -33,7 +33,7 @@ router.post('/', [
     return res
       .status(201)
       .jsend
-      .success(awardCreated)
+      .success(await Award.scope('posts').findByPk(awardCreated.id))
   } catch (err) {
     console.log(err)
     return res

@@ -57,11 +57,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.ENUM('j', 'b', 'bc', 'p', 'e'),
       allowNull: false
     }
-  }, {
-    paranoid: true,
-    timestamps: true,
-    freezeTableName: true,
-    charset: 'utf8mb4'
   })
 
   Publication.associate = function (models) {

@@ -16,10 +16,6 @@ module.exports = function (sequelize, Sequelize) {
         key: 'id'
       }
     }
-  }, {
-    paranoid: false,
-    timestamps: false,
-    freezeTableName: true
   })
   Communication.associate = function (models) {
   }
