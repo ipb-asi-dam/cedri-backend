@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const models = require('../../../../models')
 const { param, check, validationResult } = require('express-validator/check')
-const Communication = models.communication
+const { communication: Communication, file: File } = models
 const { hasPermission } = require('../../../../middleweres')
 
 router.post('/', [
