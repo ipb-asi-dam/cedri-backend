@@ -54,7 +54,7 @@ module.exports = function (sequelize, Sequelize) {
   Investigator.loadScopes = (models) => {
     Investigator.addScope('complete', () => {
       return {
-        attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt', 'fileId'] },
+        attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'fileId'] },
         include: [
           {
             model: models.file,
