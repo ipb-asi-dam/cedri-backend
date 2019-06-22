@@ -28,11 +28,15 @@ module.exports = function (sequelize, Sequelize) {
     File.hasOne(models.investigator)
     File.hasOne(models.software)
     File.hasOne(models.project)
+<<<<<<< HEAD
     File.belongsToMany(models.communication, {
       through: 'communicationHasManyFiles',
       as: 'communications',
       foreignKey: 'fileId'
     })
+=======
+    File.hasOne(models.communication)
+>>>>>>> a3aca0906fa20d9c2f8357fb8a30cf0e5a64a14d
   }
   File.loadScopes = (models) => {
     File.addScope('basic', () => {
