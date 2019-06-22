@@ -120,4 +120,25 @@ router.put('', [
   }
 })
 
+router.get('/', async (req, res) => {
+  try {
+    let limit = +req.query.limit || 15
+    const countTotal = (await Project.findAndCountAll()).count
+    const pagesTotal = Math.ceil(countTotal / limit)
+    let page = +req.query.page || 1
+    if (page > pagesTotal) page = pagesTotal
+    if (limit > countTotal) limit = countTotal
+    let offset = limit * (page - 1)
+    const projects = await Project.scope('basic').findAll({
+      limit,
+      offset
+    })
+    return res
+      .status(200)
+      .jsend
+      .success({ projects, pagesTotal, countTotal })
+  } catch (err) {
+
+  }
+})
 module.exports = router
