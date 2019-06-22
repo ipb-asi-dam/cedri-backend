@@ -43,14 +43,21 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: false
     }
   }, {
-    paranoid: false,
-    timestamps: false,
+    paranoid: true,
+    timestamps: true,
     freezeTableName: true,
     charset: 'utf8mb4'
   })
   Project.associate = function (models) {
     Project.belongsTo(models.investigator)
     Project.belongsTo(models.file)
+  }
+  Project.loadScopes = (models) => {
+    Project.addScope('basic', () => {
+      return {
+        attributes: ['id', 'title', 'isAccepted']
+      }
+    })
   }
   return Project
 }
