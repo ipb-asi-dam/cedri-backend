@@ -17,7 +17,11 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: true
     },
-    date: {
+    startDate: {
+      type: Sequelize.DATE,
+      allowNull: true
+    },
+    endDate: {
       type: Sequelize.DATE,
       allowNull: true
     },
@@ -37,6 +41,7 @@ module.exports = function (sequelize, Sequelize) {
   })
   Communication.associate = function (models) {
     Communication.belongsTo(models.investigator)
+    Communication.belongsTo(models.file)
   }
   Communication.loadScopes = (models) => {
     Communication.addScope('complete', () => {

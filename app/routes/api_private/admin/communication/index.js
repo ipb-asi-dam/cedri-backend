@@ -6,11 +6,27 @@ const { hasPermission } = require('../../../../middleweres')
 
 router.post('/', [
   hasPermission,
-  check('name', 'Atributo name não pode ser nulo')
+  check('name')
     .exists()
+    .withMessage('Campo name não pode ser nulo')
     .toString(),
   check('url')
     .exists()
+    .withMessage('Campo ur não pode ser nulo')
+    .toString(),
+  check('context')
+    .optional()
+    .toString(),
+  check('startDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Valor de startDate errado. Valores aceitos (YYYY-MM-DD ou YYYY-MM ou YYYY)'),
+  check('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Valor de endDate errado. Valores aceitos (YYYY-MM-DD ou YYYY-MM ou YYYY)'),
+  check('local')
+    .optional()
     .toString(),
   check('type')
     .exists()
@@ -102,10 +118,14 @@ router.put('/:id', [
     .optional(),
   check('context')
     .optional(),
-  check('date')
+  check('startDate')
     .optional()
     .isISO8601()
-    .withMessage('Formato date errado. Valor esperado (YYYY ou YYYY-MM ou YYYY-MM-DD'),
+    .withMessage('Valor de startDate errado. Valores aceitos (YYYY-MM-DD ou YYYY-MM ou YYYY)'),
+  check('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Valor de endDate errado. Valores aceitos (YYYY-MM-DD ou YYYY-MM ou YYYY)'),
   check('local')
     .optional(),
   check('type')
