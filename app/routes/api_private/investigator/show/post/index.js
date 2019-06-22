@@ -7,6 +7,7 @@ router.get('/', async (req, res) => {
     return model.findAll({
       attributes: ['id',
         'title',
+        'createdAt',
         [models.Sequelize.col('investigator.name'), 'author'],
         [models.Sequelize.literal(`'${model.getTableName()}'`), 'type']
       ],
