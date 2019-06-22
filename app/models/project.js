@@ -53,6 +53,20 @@ module.exports = function (sequelize, Sequelize) {
         attributes: ['id', 'title', 'isAccepted']
       }
     })
+    Project.addScope('posts', () => {
+      return {
+        attributes: ['id',
+          'title',
+          'createdAt',
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'project'`), 'type']
+        ],
+        include: [{
+          model: models.investigator,
+          attributes: []
+        }]
+      }
+    })
   }
   return Project
 }

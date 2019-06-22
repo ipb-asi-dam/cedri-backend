@@ -42,5 +42,21 @@ module.exports = function (sequelize, Sequelize) {
   These.associate = function (models) {
     These.belongsTo(models.investigator)
   }
+  These.loadScopes = (models) => {
+    These.addScope('posts', () => {
+      return {
+        attributes: ['id',
+          'title',
+          'createdAt',
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'these'`), 'type']
+        ],
+        include: [{
+          model: models.investigator,
+          attributes: []
+        }]
+      }
+    })
+  }
   return These
 }

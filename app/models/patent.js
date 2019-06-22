@@ -22,5 +22,21 @@ module.exports = function (sequelize, Sequelize) {
     Patent.belongsTo(models.investigator)
   }
 
+  Patent.loadScopes = (models) => {
+    Patent.addScope('posts', () => {
+      return {
+        attributes: ['id',
+          'title',
+          'createdAt',
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'patent'`), 'type']
+        ],
+        include: [{
+          model: models.investigator,
+          attributes: []
+        }]
+      }
+    })
+  }
   return Patent
 }

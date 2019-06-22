@@ -78,6 +78,20 @@ module.exports = function (sequelize, Sequelize) {
         ]
       }
     })
+    Publication.addScope('posts', () => {
+      return {
+        attributes: ['id',
+          'title',
+          'createdAt',
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'publication'`), 'type']
+        ],
+        include: [{
+          model: models.investigator,
+          attributes: []
+        }]
+      }
+    })
   }
 
   return Publication

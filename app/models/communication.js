@@ -33,5 +33,22 @@ module.exports = function (sequelize, Sequelize) {
       foreignKey: 'communicationId'
     })
   }
+
+  Communication.loadScopes = (models) => {
+    Communication.addScope('posts', () => {
+      return {
+        attributes: ['id',
+          'title',
+          'createdAt',
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'communication'`), 'type']
+        ],
+        include: [{
+          model: models.investigator,
+          attributes: []
+        }]
+      }
+    })
+  }
   return Communication
 }

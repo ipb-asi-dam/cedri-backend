@@ -18,6 +18,22 @@ module.exports = function (sequelize, Sequelize) {
     Software.belongsTo(models.investigator)
     Software.belongsTo(models.file)
   }
+  Software.loadScopes = (models) => {
+    Software.addScope('posts', () => {
+      return {
+        attributes: ['id',
+          'title',
+          'createdAt',
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'software'`), 'type']
+        ],
+        include: [{
+          model: models.investigator,
+          attributes: []
+        }]
+      }
+    })
+  }
 
   return Software
 }
