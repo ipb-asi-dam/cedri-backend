@@ -20,14 +20,19 @@ module.exports = function (sequelize, Sequelize) {
     }
 
   }, {
-    paranoid: false,
-    timestamps: false,
+    paranoid: true,
+    timestamps: true,
     freezeTableName: true
   })
   File.associate = function (models) {
     File.hasOne(models.investigator)
     File.hasOne(models.software)
     File.hasOne(models.project)
+    File.belongsToMany(models.communication, {
+      through: 'communicationHasManyFiles',
+      as: 'communications',
+      foreignKey: 'fileId'
+    })
   }
   File.loadScopes = (models) => {
     File.addScope('basic', () => {
