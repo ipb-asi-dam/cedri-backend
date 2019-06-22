@@ -28,6 +28,7 @@ module.exports = function (sequelize, Sequelize) {
     File.hasOne(models.investigator)
     File.hasOne(models.software)
     File.hasOne(models.project)
+    File.hasOne(models.communication)
   }
   File.loadScopes = (models) => {
     File.addScope('basic', () => {

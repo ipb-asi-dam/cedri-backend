@@ -25,14 +25,20 @@ router.post('/', [
       .jsend
       .fail({ errors: errors.array() })
   }
-  const comm = req.body
-
+  const communication = req.body
+  const image = (req.files || {}).image
   try {
-    const communication = await Communication.create(comm)
+    const communicationCreated = await models.sequelize.transaction(async (transaction) => {
+      if (image) {
+        const file = await File.create(image, { transaction })
+        communication.fileId = file.id
+      }
+      return Communication.create(communication, { transaction })
+    })
     return res
       .status(201)
       .jsend
-      .success(communication)
+      .success(communicationCreated)
   } catch (err) {
     return res
       .status(500)
