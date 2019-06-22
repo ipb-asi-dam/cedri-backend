@@ -5,24 +5,38 @@ module.exports = function (sequelize, Sequelize) {
       primaryKey: true,
       autoIncrement: true
     },
-    name: {
+    title: {
       type: Sequelize.STRING,
       allowNull: false
     },
-    link: {
+    description: {
       type: Sequelize.STRING,
+      allowNull: false
+    },
+    startDate: {
+      type: Sequelize.DATE,
+      allowNull: true
+    },
+    endDate: {
+      type: Sequelize.DATE,
+      allowNull: true
+    },
+    type: {
+      type: Sequelize.ENUM('news', 'event', 'media'),
       allowNull: false
     }
   }, {
-    paranoid: false,
-    timestamps: false,
+    paranoid: true,
+    timestamps: true,
     freezeTableName: true,
     charset: 'utf8mb4'
   })
   Communication.associate = function (models) {
-    Communication.hasOne(models.media)
-    Communication.hasOne(models.event)
-    Communication.hasOne(models.news)
+    Communication.belongsToMany(models.file, {
+      through: 'communicationHasManyFiles',
+      as: 'files',
+      foreignKey: 'communicationId'
+    })
   }
   return Communication
 }
