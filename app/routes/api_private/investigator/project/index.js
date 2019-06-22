@@ -53,7 +53,7 @@ router.post('/', [
     return res
       .status(201)
       .jsend
-      .success(projectCreated)
+      .success(await Project.scope('posts').findByPk(projectCreated.id))
   } catch (err) {
     console.log(err)
     return res

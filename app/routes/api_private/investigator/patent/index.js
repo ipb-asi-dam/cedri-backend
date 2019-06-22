@@ -30,7 +30,7 @@ router.post('/', [
     return res
       .status(201)
       .jsend
-      .success(patentCreated)
+      .success(await Patent.scope('posts').findByPk(patentCreated.id))
   } catch (err) {
     console.log(err)
     return res

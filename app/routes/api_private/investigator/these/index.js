@@ -56,7 +56,7 @@ router.post('/', [
     return res
       .status(201)
       .jsend
-      .success(theseCreated)
+      .success(await These.scope('posts').findByPk(theseCreated.id))
   } catch (err) {
     console.log(err)
     return res

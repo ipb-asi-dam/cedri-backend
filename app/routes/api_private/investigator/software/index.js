@@ -36,7 +36,7 @@ router.post('/', [
     return res
       .status(201)
       .jsend
-      .success(softwareCreated)
+      .success(await Software.scope('posts').findByPk(softwareCreated.id))
   } catch (err) {
     console.log(err)
     return res

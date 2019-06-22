@@ -46,7 +46,7 @@ router.post('/', [
     return res
       .status(201)
       .jsend
-      .success(publication)
+      .success(await Publication.scope('posts').findByPk(publication.id))
   } catch (err) {
     return res
       .status(500)
