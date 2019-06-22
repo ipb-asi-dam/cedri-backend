@@ -11,7 +11,7 @@ router.post('/', [
     .withMessage('Campo name não pode ser nulo')
     .toString(),
   check('url')
-    .exists()
+    .optional()
     .withMessage('Campo ur não pode ser nulo')
     .toString(),
   check('context')

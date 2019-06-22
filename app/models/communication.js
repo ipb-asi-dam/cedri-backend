@@ -11,10 +11,10 @@ module.exports = function (sequelize, Sequelize) {
     },
     url: {
       type: Sequelize.STRING(2000),
-      allowNull: false
+      allowNull: true
     },
     context: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(2000),
       allowNull: true
     },
     startDate: {
