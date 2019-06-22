@@ -47,6 +47,7 @@ module.exports = function (sequelize, Sequelize) {
   })
   Investigator.associate = function (models) {
     Investigator.hasMany(models.publication)
+    Investigator.hasMany(models.communication)
     Investigator.hasMany(models.project)
     Investigator.belongsTo(models.file)
   }

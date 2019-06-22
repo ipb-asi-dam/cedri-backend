@@ -1,21 +1,19 @@
 const router = require('express').Router()
 const models = require('../../../../models')
 const { param, check, validationResult } = require('express-validator/check')
-const Communication = models.publication
+const Communication = models.communication
 const { hasPermission } = require('../../../../middleweres')
 
 router.post('/', [
   hasPermission,
   check('name', 'Atributo name não pode ser nulo')
-    .withMessage('name não pode ser nulo')
+    .exists()
     .toString(),
   check('url')
     .exists()
-    .withMessage('url não pode ser nulo')
     .toString(),
   check('type')
     .exists()
-    .withMessage('type não pode ser nulo')
     .toString()
     .matches('^news$|^event$|^media$')
     .withMessage('parâmetro type precisa ser (news ou event ou media)')

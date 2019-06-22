@@ -41,7 +41,6 @@ module.exports = function (sequelize, Sequelize) {
   Communication.loadScopes = (models) => {
     Communication.addScope('complete', () => {
       return {
-
         attributes: {
           exclude: ['investigatorId']
         },
