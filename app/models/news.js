@@ -12,7 +12,8 @@ module.exports = function (sequelize, Sequelize) {
   }, {
     paranoid: false,
     timestamps: false,
-    freezeTableName: true
+    freezeTableName: true,
+    charset: 'utf8mb4'
   })
   News.associate = function (models) {
     News.belongsTo(models.communication)

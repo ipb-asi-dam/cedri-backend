@@ -1,21 +1,24 @@
 const router = require('express').Router()
 const { check, validationResult } = require('express-validator/check')
-const { patent: Patent } = require('../../../../models')
+const { award: Award } = require('../../../../models')
 const { hasPermission } = require('../../../../middleweres')
+
 router.post('/', [
   check('title')
     .exists()
     .withMessage('Campo title não pode ser nulo')
     .toString()
     .trim(),
-  check('authors')
+  check('prizeWinners')
     .exists()
-    .withMessage('Campo authors não pode ser nulo')
+    .withMessage('Campo prizeWinners não pode ser nulo')
     .toString()
     .trim(),
-  check('patentNumbers')
-    .optional()
-    .toString()
+  check('date')
+    .exists()
+    .withMessage('Campo date não pode ser nulo')
+    .isISO8601()
+    .withMessage('Formato date errado. Valor esperado (YYYY ou YYYY-MM ou YYYY-MM-DD)')
 ], async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -24,34 +27,34 @@ router.post('/', [
       .jsend
       .fail({ errors: errors.array() })
   }
-  const patent = req.body
+  const award = req.body
   try {
-    const patentCreated = await Patent.create(patent)
+    const awardCreated = await Award.create(award)
     return res
       .status(201)
       .jsend
-      .success(patentCreated)
+      .success(awardCreated)
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao inserir Patent' })
+      .error({ message: 'Erro ao inserir prêmio' })
   }
 })
 
 router.put('/:id', hasPermission, async (req, res) => {
   const id = +req.params.id
-  const patent = req.body
+  const award = req.body
   try {
-    const _patent = await Patent.findByPk(id)
-    if (!_patent) {
+    const _award = await Award.findByPk(id)
+    if (!_award) {
       return res
         .status(404)
         .jsend
-        .fail({ message: 'Patent com id ' + id + ' não existe' })
+        .fail({ message: 'Prêmio com id ' + id + 'não encontrado.' })
     }
-    await Patent.update(patent, {
+    await Award.update(award, {
       where: {
         id
       }
@@ -59,54 +62,53 @@ router.put('/:id', hasPermission, async (req, res) => {
     return res
       .status(200)
       .jsend
-      .success(await Patent.findByPk(id))
+      .success(await Award.findByPk(id))
   } catch (err) {
     console.log(err)
     return res
       .status(500)
-      .error({ message: 'Erro ao inserir Patent' })
+      .jsend
+      .error({ message: 'Erro ao realizer upgrade no prêmio com id' + id })
   }
 })
 
 router.get('/', async (req, res) => {
   try {
-    const patents = await Patent.findAll()
+    const awards = await Award.findAll()
     return res
       .status(200)
       .jsend
-      .success(patents)
+      .success(awards)
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar todas patentes' })
+      .error({ message: 'Erro ao retornar todos os prêmios' })
   }
 })
+
 router.get('/:id', async (req, res) => {
   const id = +req.params.id
   try {
-    const patent = await Patent.findOne({
-      where: {
-        id
-      }
-    })
-    if (!patent) {
+    const award = await Award.findByPk(id)
+    if (!award) {
       return res
         .status(404)
         .jsend
-        .fail({ message: 'Patent com id ' + id + ' não encontrada' })
+        .fail({ message: 'Prêmio de id ' + id + 'não encontrado.' })
     }
     return res
       .status(200)
       .jsend
-      .success(patent)
+      .success(award)
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar todas patentes' })
+      .error({ message: 'Erro ao retornar todos os prêmios' })
   }
 })
+
 module.exports = router

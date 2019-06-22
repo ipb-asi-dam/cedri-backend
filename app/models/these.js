@@ -1,45 +1,41 @@
 module.exports = function (sequelize, Sequelize) {
-  const Project = sequelize.define('project', {
+  const These = sequelize.define('these', {
     id: {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
       autoIncrement: true
     },
     title: {
+      type: Sequelize.STRING(1000),
+      allowNull: false
+    },
+    student: {
       type: Sequelize.STRING,
       allowNull: false
     },
-    description: {
+    grade: {
       type: Sequelize.STRING,
       allowNull: false
     },
-    fundedBy: {
+    institute: {
       type: Sequelize.STRING,
       allowNull: false
     },
-    consortium: {
-      type: Sequelize.STRING,
-      allowNull: true
-    },
-    startDate: {
-      type: Sequelize.DATE,
-      allowNull: false
-    },
-    endDate: {
-      type: Sequelize.DATE,
-      allowNull: false
-    },
-    url: {
-      type: Sequelize.STRING(2000),
-      allowNull: true
-    },
-    isAccepted: {
+    completed: {
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: false
     },
+    date: {
+      type: Sequelize.DATE,
+      allowNull: true
+    },
+    supervisors: {
+      type: Sequelize.STRING(500),
+      allowNull: false
+    },
     type: {
-      type: Sequelize.ENUM('international', 'national', 'other'),
+      type: Sequelize.ENUM('phd', 'msc'),
       allowNull: false
     }
   }, {
@@ -48,9 +44,8 @@ module.exports = function (sequelize, Sequelize) {
     freezeTableName: true,
     charset: 'utf8mb4'
   })
-  Project.associate = function (models) {
-    Project.belongsTo(models.investigator)
-    Project.belongsTo(models.file)
+  These.associate = function (models) {
+    These.belongsTo(models.investigator)
   }
-  return Project
+  return These
 }

@@ -46,15 +46,19 @@ router.post('/', [
     .toString()
     .trim()
     .isEmail()
-    .withMessage('O campo email está errado'),
+    .withMessage('O campo email é inválido'),
   check('name', 'Atributo name não pode ser nulo')
-    .exists()
-    .isString()
-    .withMessage('Name precisa ser uma string'),
+    .exists(),
   check('isAdmin', 'Atributo isAdmin não pode ser nulo')
     .exists()
     .isBoolean()
-    .withMessage('isAdmin precisa ser booleano')
+    .withMessage('isAdmin precisa ser booleano'),
+  check('type')
+    .exists()
+    .withMessage('type não pode ser nulo')
+    .matches(/^im$|^rf$|^c$|^vr$/)
+    .withMessage('parâmetro type precisa ser (im ou rf ou c ou vr)')
+
 ], async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -99,16 +103,12 @@ router.put('/:id', [
     .isLength({ min: 8, max: 255 })
     .withMessage('Password precisa ter no minimo 8 e no máximo 255 caracteres')
     .optional(),
-  check('occupation')
-    .toString()
-    .optional(),
   check('isAdmin')
     .optional()
     .isBoolean()
     .withMessage('isAdmin precisa ser boolean'),
   check('type')
-    .exists()
-    .withMessage('type não pode ser nulo')
+    .optional()
     .matches('^im$|^rf$|^c$|^vr$')
     .withMessage('parâmetro type precisa ser (im ou rf ou c ou vr)')
 ], async (req, res) => {
@@ -163,50 +163,6 @@ router.put('/:id', [
       .status(500)
       .jsend
       .error({ message: 'Erro ao atualizar usuário.' })
-  }
-})
-
-router.get('/', isAdmin, async (req, res) => {
-  try {
-    let users
-    const query = req.query
-    if (query.showDeleted === false || query.showDeleted === 'false') {
-      users = await Investigator.scope('complete').findAll()
-    } else {
-      users = await Investigator.scope('complete').findAll({ paranoid: false })
-    }
-    return res
-      .status(200)
-      .jsend
-      .success(users)
-  } catch (err) {
-    return res
-      .status(500)
-      .jsend
-      .error({ message: 'Erro ao listar usuários.' })
-  }
-})
-
-router.get('/:id', hasPermission, async (req, res) => {
-  const id = +req.params.id
-  try {
-    const user = await Investigator.scope('complete').findByPk(id)
-    if (user) {
-      return res
-        .status(200)
-        .jsend
-        .success(user)
-    } else {
-      return res
-        .status(404)
-        .jsend
-        .fail({ message: 'Usuário não encontrado' })
-    }
-  } catch (err) {
-    return res
-      .status(500)
-      .jsend
-      .error({ message: 'Erro ao listar usuários.' })
   }
 })
 
@@ -304,6 +260,50 @@ router.get('/:id/files/:hash', hasPermission, async (req, res) => {
   } catch (err) {
     console.log(err)
     return res.status(500).jsend.fail(err)
+  }
+})
+
+router.get('/', isAdmin, async (req, res) => {
+  try {
+    let users
+    const query = req.query
+    if (query.showDeleted === false || query.showDeleted === 'false') {
+      users = await Investigator.scope('complete').findAll()
+    } else {
+      users = await Investigator.scope('complete').findAll({ paranoid: false })
+    }
+    return res
+      .status(200)
+      .jsend
+      .success(users)
+  } catch (err) {
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao listar usuários.' })
+  }
+})
+
+router.get('/:id', hasPermission, async (req, res) => {
+  const id = +req.params.id
+  try {
+    const user = await Investigator.scope('complete').findByPk(id)
+    if (user) {
+      return res
+        .status(200)
+        .jsend
+        .success(user)
+    } else {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Usuário não encontrado' })
+    }
+  } catch (err) {
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao listar usuários.' })
   }
 })
 module.exports = router

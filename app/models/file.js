@@ -15,6 +15,7 @@ module.exports = function (sequelize, Sequelize) {
     },
     md5: {
       type: Sequelize.STRING(32),
+      primaryKey: true,
       allowNull: false
     }
 
@@ -27,11 +28,13 @@ module.exports = function (sequelize, Sequelize) {
     File.hasOne(models.investigator)
     File.hasOne(models.news)
     File.hasOne(models.media)
+    File.hasOne(models.software)
+    File.hasOne(models.project)
   }
   File.loadScopes = (models) => {
     File.addScope('basic', () => {
       return {
-        attributes: ['id', 'md5', 'mimetype']
+        attributes: { exclude: ['data'] }
       }
     })
   }

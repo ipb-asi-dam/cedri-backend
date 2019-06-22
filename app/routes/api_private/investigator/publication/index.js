@@ -2,6 +2,7 @@ const router = require('express').Router()
 const models = require('../../../../models')
 const { param, check, validationResult } = require('express-validator/check')
 const Publication = models.publication
+const { hasPermission } = require('../../../../middleweres')
 
 router.post('/', [
   check('authors')
@@ -13,13 +14,9 @@ router.post('/', [
     .withMessage('title não pode ser nulo')
     .toString(),
   check('year')
-    .exists()
-    .withMessage('year não pode ser nulo')
-    .isNumeric()
-    .withMessage('Campo year precisa ser um número')
-    .isLength({ min: 4, max: 4 })
-    .withMessage('year precisa ter 4 digitos')
-    .toInt(),
+    .optional()
+    .isISO8601()
+    .withMessage('Formato date errado. Valor esperado YYYY'),
   check('sourceTitle')
     .exists()
     .withMessage('sourceTitle não pode ser nulo')
@@ -32,10 +29,15 @@ router.post('/', [
     .exists()
     .withMessage('type não pode ser nulo')
     .toString()
+    .matches('^b$|^bc$|^j$|^p$|^e$')
+    .withMessage('parâmetro type precisa ser (j ou b ou bc ou j ou p ou e)')
 ], async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(422).json({ success: false, errors: errors.array() })
+    return res
+      .status(422)
+      .jsend
+      .fail({ errors: errors.array() })
   }
   const pub = req.body
 
@@ -48,10 +50,8 @@ router.post('/', [
   } catch (err) {
     return res
       .status(500)
-      .send({
-        success: false,
-        msg: 'Algo deu errado durante a criação da publicação'
-      })
+      .jsend
+      .error({ message: 'Algo deu errado durante a criação da publicação' })
   }
 })
 
@@ -60,17 +60,13 @@ router.get('/', async (req, res, next) => {
     const publications = await Publication.scope('complete').findAll()
     return res
       .status(200)
-      .send({
-        success: true,
-        data: publications
-      })
+      .jsend
+      .success(publications)
   } catch (err) {
     return res
       .status(500)
-      .send({
-        success: false,
-        msg: 'Algo deu errado durante a listagem das publicações'
-      })
+      .jsend
+      .error({ message: 'Algo deu errado durante a listagem das publicações' })
   }
 })
 
@@ -81,7 +77,10 @@ router.get('/types/:type', [
 ], async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(422).json({ success: false, errors: errors.array() })
+    return res
+      .status(422)
+      .jsend
+      .fail({ errors: errors.array() })
   }
   try {
     const publications = await Publication.scope('complete').findAll({
@@ -91,54 +90,62 @@ router.get('/types/:type', [
     })
     return res
       .status(200)
-      .send({
-        success: true,
-        data: publications
-      })
+      .jsend
+      .success(publications)
   } catch (err) {
     return res
       .status(500)
-      .send({
-        success: false,
-        msg: 'Algo deu errado durante a listagem das publicações do tipo ' + req.params.type
+      .jsend
+      .error({
+        message: 'Algo deu errado durante a listagem das publicações do tipo ' + req.params.type
       })
   }
 })
 
 router.put('/:id', [
+  hasPermission,
   check('year')
     .optional()
-    .isNumeric()
-    .withMessage('Campo year precisa ser um número')
-    .isLength({ min: 4, max: 4 })
-    .withMessage('year precisa ter 4 digitos')
-    .toInt()
+    .isISO8601()
+    .withMessage('Formato date errado. Valor esperado YYYY'),
+  check('type')
+    .optional()
+    .toString()
+    .matches('^b$|^bc$|^j$|^p$|^e$')
+    .withMessage('parâmetro type precisa ser (j ou b ou bc ou j ou p ou e)')
 ], async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(422).json({ success: false, errors: errors.array() })
+    return res
+      .status(422)
+      .jsend
+      .fail({ errors: errors.array() })
   }
   try {
-    const publication = await Publication.findByPk(req.param.id)
+    const publication = await Publication.findByPk(req.params.id)
+    if (!publication) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Publication não encontrada!' })
+    }
     await Publication.update(req.body,
       {
         where: {
           id: publication.id
         }
       })
+
     return res
       .status(200)
-      .send({
-        success: true,
-        msg: 'Usuário atualizado com sucesso!'
-      })
+      .jsend
+      .success(await Publication.scope('complete').findByPk(publication.id))
   } catch (err) {
+    console.log(err)
     return res
       .status(500)
-      .send({
-        success: false,
-        msg: 'Algo deu errado durante o update da publicação'
-      })
+      .jsend
+      .error({ message: 'Algo deu errado durante o update da publicação' })
   }
 })
 

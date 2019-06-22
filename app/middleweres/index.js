@@ -4,9 +4,21 @@ const HttpStatus = require('http-status-codes')
 const { API_SECRET } = require('../config/config.json')[env]
 const middlewares = {}
 
+middlewares.removeNull = async (req, res, next) => {
+  const body = Object
+    .entries(req.body)
+    .reduce((acumulado, atual) => {
+      if (atual[1] === 'null') {
+        return { ...acumulado, [atual[0]]: null }
+      }
+
+      return { ...acumulado, [atual[0]]: atual[1] }
+    }, {})
+  req.body = body
+  next()
+}
 middlewares.isValidToken = async (req, res, next) => {
   const token = req.body.token || req.query.token || req.headers['x-access-token']
-
   if (req.method === 'OPTIONS') {
     return next()
   }
@@ -19,6 +31,9 @@ middlewares.isValidToken = async (req, res, next) => {
       }
 
       req.user = decoded
+      if (req.method === 'POST') {
+        req.user.investigatorId = req.user.id
+      }
       return next()
     })
   } else {

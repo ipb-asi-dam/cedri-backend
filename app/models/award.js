@@ -1,5 +1,5 @@
 module.exports = function (sequelize, Sequelize) {
-  const Patents = sequelize.define('patent', {
+  const Award = sequelize.define('award', {
     id: {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
@@ -9,25 +9,31 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING(1000),
       allowNull: false
     },
-    reference: {
-      type: Sequelize.STRING(100),
-      allowNull: false
-    },
-    link: {
-      type: Sequelize.STRING(2000),
+    prizeWinners: {
+      type: Sequelize.STRING(500),
       allowNull: false
     },
     date: {
       type: Sequelize.DATE,
       allowNull: false
+    },
+    address: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    event: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   }, {
     paranoid: false,
     timestamps: false,
-    freezeTableName: true
+    freezeTableName: true,
+    charset: 'utf8mb4'
   })
-  Patents.associate = function (models) {
-    Patents.belongsTo(models.investigator)
+  Award.associate = function (models) {
+    Award.belongsTo(models.investigator)
   }
-  return Patents
+
+  return Award
 }

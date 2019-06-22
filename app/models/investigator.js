@@ -43,7 +43,8 @@ module.exports = function (sequelize, Sequelize) {
   }, {
     paranoid: true,
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    charset: 'utf8mb4'
   })
   Investigator.associate = function (models) {
     Investigator.hasMany(models.publication)
@@ -53,7 +54,13 @@ module.exports = function (sequelize, Sequelize) {
   Investigator.loadScopes = (models) => {
     Investigator.addScope('complete', () => {
       return {
-        attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'] }
+        attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt', 'fileId'] },
+        include: [
+          {
+            model: models.file,
+            attributes: ['id', 'md5']
+          }
+        ]
       }
     })
     Investigator.addScope('basic', () => {

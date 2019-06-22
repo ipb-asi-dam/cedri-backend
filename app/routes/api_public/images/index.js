@@ -18,12 +18,12 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-router.get('/:id', async (req, res, next) => {
-  const id = +req.params.id
+router.get('/:md5', async (req, res, next) => {
+  const md5 = req.params.md5
   try {
     const file = await File.findOne({
       where: {
-        id
+        md5
       }
     })
     if (!file) {
@@ -39,7 +39,7 @@ router.get('/:id', async (req, res, next) => {
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar imagem com id:' + id })
+      .error({ message: 'Erro ao retornar imagem com hash:' + md5 })
   }
 })
 

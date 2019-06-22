@@ -16,7 +16,8 @@ module.exports = function (sequelize, Sequelize) {
   }, {
     paranoid: false,
     timestamps: false,
-    freezeTableName: true
+    freezeTableName: true,
+    charset: 'utf8mb4'
   })
   Event.associate = function (models) {
     Event.belongsTo(models.communication)

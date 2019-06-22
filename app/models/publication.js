@@ -14,7 +14,7 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: false
     },
     year: {
-      type: Sequelize.INTEGER(4).UNSIGNED,
+      type: Sequelize.DATE,
       allowNull: false
     },
     sourceTitle: {
@@ -71,6 +71,10 @@ module.exports = function (sequelize, Sequelize) {
   Publication.loadScopes = (models) => {
     Publication.addScope('complete', () => {
       return {
+
+        attributes: {
+          exclude: [ 'investigatorId' ]
+        },
         include: [
           {
             model: models.investigator,
