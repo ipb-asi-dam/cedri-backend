@@ -29,7 +29,7 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.DATE,
       allowNull: false
     },
-    url: {
+    webPage: {
       type: Sequelize.STRING(2000),
       allowNull: true
     },
@@ -59,7 +59,7 @@ module.exports = function (sequelize, Sequelize) {
           'title',
           'createdAt',
           [models.Sequelize.col('investigator.name'), 'author'],
-          [models.Sequelize.literal(`'project'`), 'type']
+          'isAccepted'
         ],
         include: [{
           model: models.investigator,

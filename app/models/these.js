@@ -28,7 +28,7 @@ module.exports = function (sequelize, Sequelize) {
     },
     date: {
       type: Sequelize.DATE,
-      allowNull: true
+      allowNull: false
     },
     supervisors: {
       type: Sequelize.STRING(500),
@@ -48,8 +48,7 @@ module.exports = function (sequelize, Sequelize) {
         attributes: ['id',
           'title',
           'createdAt',
-          [models.Sequelize.col('investigator.name'), 'author'],
-          [models.Sequelize.literal(`'these'`), 'type']
+          [models.Sequelize.col('investigator.name'), 'author']
         ],
         include: [{
           model: models.investigator,

@@ -137,16 +137,15 @@ router.put('/:id', [
           .fail({ message: 'Usuário não encontrado.' })
       }
       if (image) {
-        let file
         if (investigator.fileId) {
-          file = await File.update(image, {
+          await File.update(image, {
             where: { id: investigator.fileId },
             transaction
           })
         } else {
-          file = await File.create(image, { transaction })
+          const file = await File.create(image, { transaction })
+          user.fileId = file.id
         }
-        user.fileId = file.id
       }
       return Investigator.update(user, {
         where: { id: investigator.id },

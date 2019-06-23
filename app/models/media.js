@@ -1,34 +1,35 @@
 module.exports = function (sequelize, Sequelize) {
-  const Patent = sequelize.define('patent', {
+  const Media = sequelize.define('media', {
     id: {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
       autoIncrement: true
     },
     title: {
-      type: Sequelize.STRING(1000),
+      type: Sequelize.STRING(500),
       allowNull: false
     },
-    authors: {
-      type: Sequelize.STRING(1024),
-      allowNull: false
-    },
-    patentNumbers: {
+    links: {
       type: Sequelize.STRING(5000),
       allowNull: true
     }
   })
-  Patent.associate = function (models) {
-    Patent.belongsTo(models.investigator)
+  Media.associate = function (models) {
+    Media.belongsToMany(models.file, {
+      through: 'mediaHasManyFiles',
+      as: 'files',
+      foreignKey: 'mediaId'
+    })
   }
 
-  Patent.loadScopes = (models) => {
-    Patent.addScope('posts', () => {
+  Media.loadScopes = (models) => {
+    Media.addScope('posts', () => {
       return {
         attributes: ['id',
           'title',
           'createdAt',
-          [models.Sequelize.col('investigator.name'), 'author']
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'news'`), 'type']
         ],
         include: [{
           model: models.investigator,
@@ -37,5 +38,5 @@ module.exports = function (sequelize, Sequelize) {
       }
     })
   }
-  return Patent
+  return Media
 }

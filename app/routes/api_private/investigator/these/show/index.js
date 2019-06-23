@@ -1,16 +1,15 @@
 const router = require('express').Router()
-const model = require('../../../../../models')
+const { these: These } = require('../../../../../models')
 const { hasPermissionPosts, pagination } = require('../../../../../middleweres')
-const { award: Award } = model
 
 router.get('/', pagination, async (req, res) => {
   try {
     const limit = req.query.limit
     const page = req.query.page
     const offset = limit * (page - 1)
-    let awards
+    let theses
     if (req.user.isAdmin !== true) {
-      awards = await Award.scope('posts').findAndCountAll({
+      theses = await These.scope('posts').findAndCountAll({
         limit,
         offset,
         where: {
@@ -18,52 +17,52 @@ router.get('/', pagination, async (req, res) => {
         }
       })
     } else {
-      awards = await Award.scope('posts').findAndCountAll({
+      theses = await These.scope('posts').findAndCountAll({
         limit,
         offset
       })
     }
-    const pagesTotal = Math.ceil(awards.count / limit)
-    const countTotal = awards.count
+    const pagesTotal = Math.ceil(theses.count / limit)
+    const countTotal = theses.count
     return res
       .status(200)
       .jsend
-      .success({ awards: awards.rows, pagesTotal, countTotal })
+      .success({ theses: theses.rows, pagesTotal, countTotal })
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar todos os prêmios' })
+      .error({ message: 'Erro ao retornar todos os software' })
   }
 })
 
 router.get('/:id', async (req, res) => {
   const id = +req.params.id
   try {
-    const award = await Award.findByPk(id)
-    if (!award) {
+    const _these = await These.findByPk(id)
+    if (!_these) {
       return res
         .status(404)
         .jsend
-        .fail({ message: 'Prêmio de id ' + id + ' não encontrado.' })
+        .fail({ message: 'These com id ' + id + 'não encontrada' })
     }
-    if (!hasPermissionPosts(req.user, award.investigatorId)) {
+    if (!hasPermissionPosts(req.user, _these.investigatorId)) {
       return res
         .status(401)
         .jsend
-        .fail({ message: 'Sem permissão para realizar get neste post' })
+        .fail({ message: 'Sem permissão para listar esse post de id ' + id })
     }
     return res
       .status(200)
       .jsend
-      .success(award)
+      .success(_these)
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar prêmios com id ' + id })
+      .error({ message: 'Erro ao retornar these com id ' + id })
   }
 })
 

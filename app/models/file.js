@@ -24,9 +24,9 @@ module.exports = function (sequelize, Sequelize) {
     File.hasOne(models.investigator)
     File.hasOne(models.software)
     File.hasOne(models.project)
-    File.belongsToMany(models.communication, {
-      through: 'communicationHasManyFiles',
-      as: 'communications',
+    File.belongsToMany(models.media, {
+      through: 'mediaHasManyFiles',
+      as: 'media',
       foreignKey: 'fileId'
     })
   }

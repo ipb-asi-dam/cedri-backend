@@ -1,10 +1,10 @@
 module.exports = function (sequelize, Sequelize) {
-  const Communication = sequelize.define('communicationHasManyFiles', {
-    communicationId: {
+  const MediaHasManyFiles = sequelize.define('mediaHasManyFiles', {
+    mediaId: {
       type: Sequelize.INTEGER(11),
       allowNull: false,
       references: {
-        model: 'communication',
+        model: 'media',
         key: 'id'
       }
     },
@@ -17,7 +17,7 @@ module.exports = function (sequelize, Sequelize) {
       }
     }
   })
-  Communication.associate = function (models) {
+  MediaHasManyFiles.associate = function (models) {
   }
-  return Communication
+  return MediaHasManyFiles
 }

@@ -1,26 +1,24 @@
 const router = require('express').Router()
-const model = require('../../../../../models')
 const { hasPermissionPosts } = require('../../../../../middleweres')
-const { award: Award } = model
+const { publication: Publication } = require('../../../../../models')
 
 router.delete('/:id', async (req, res) => {
   const id = +req.params.id
-
   try {
-    const _award = await Award.findByPk(id)
-    if (!_award) {
+    const _publication = await Publication.findByPk(id)
+    if (!_publication) {
       return res
         .status(404)
         .jsend
-        .fail({ message: 'Prêmio com id ' + id + ' não encontrado' })
+        .fail({ message: 'Publicação com id ' + id + ' não encontrada' })
     }
-    if (!hasPermissionPosts(req.user, _award.investigatorId)) {
+    if (!hasPermissionPosts(req.user, _publication.investigatorId)) {
       return res
         .status(401)
         .jsend
         .fail({ message: 'Sem permissão para deletar esse post' })
     }
-    await Award.destroy({
+    await Publication.destroy({
       where: {
         id
       }
@@ -28,14 +26,13 @@ router.delete('/:id', async (req, res) => {
     return res
       .status(200)
       .jsend
-      .success({ message: 'Prêmio deletado com sucesso!' })
+      .success({ message: 'Publicação deletada com sucesso!' })
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao deletar prêmio com id ' + id })
+      .error({ message: 'Erro ao deletar publicação com id ' + id })
   }
 })
-
 module.exports = router

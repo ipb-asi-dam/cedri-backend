@@ -43,7 +43,12 @@ module.exports = function (sequelize, Sequelize) {
   })
   Investigator.associate = function (models) {
     Investigator.hasMany(models.publication)
-    Investigator.hasMany(models.communication)
+    Investigator.hasMany(models.award)
+    Investigator.hasMany(models.patent)
+    Investigator.hasMany(models.software)
+    Investigator.hasMany(models.event)
+    Investigator.hasMany(models.news)
+    Investigator.hasMany(models.media)
     Investigator.hasMany(models.project)
     Investigator.belongsTo(models.file)
   }

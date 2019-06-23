@@ -1,30 +1,31 @@
 module.exports = function (sequelize, Sequelize) {
-  const Software = sequelize.define('software', {
+  const News = sequelize.define('news', {
     id: {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
       autoIncrement: true
     },
     title: {
-      type: Sequelize.STRING(1000),
+      type: Sequelize.STRING(500),
       allowNull: false
     },
     description: {
-      type: Sequelize.STRING(1024),
+      type: Sequelize.STRING(5000),
       allowNull: false
     }
   })
-  Software.associate = function (models) {
-    Software.belongsTo(models.investigator)
-    Software.belongsTo(models.file)
+  News.associate = function (models) {
+    News.belongsTo(models.file)
   }
-  Software.loadScopes = (models) => {
-    Software.addScope('posts', () => {
+
+  News.loadScopes = (models) => {
+    News.addScope('posts', () => {
       return {
         attributes: ['id',
           'title',
           'createdAt',
-          [models.Sequelize.col('investigator.name'), 'author']
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'news'`), 'type']
         ],
         include: [{
           model: models.investigator,
@@ -33,6 +34,5 @@ module.exports = function (sequelize, Sequelize) {
       }
     })
   }
-
-  return Software
+  return News
 }

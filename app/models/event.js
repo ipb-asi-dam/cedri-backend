@@ -1,42 +1,43 @@
 module.exports = function (sequelize, Sequelize) {
-  const Award = sequelize.define('award', {
+  const Event = sequelize.define('event', {
     id: {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
       autoIncrement: true
     },
     title: {
-      type: Sequelize.STRING(1000),
-      allowNull: false
-    },
-    prizeWinners: {
       type: Sequelize.STRING(500),
       allowNull: false
     },
-    date: {
+    startDate: {
+      type: Sequelize.DATE,
+      allowNull: false
+    },
+    endDate: {
       type: Sequelize.DATE,
       allowNull: false
     },
     address: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: false
     },
-    event: {
-      type: Sequelize.STRING,
-      allowNull: true
+    links: {
+      type: Sequelize.STRING(5000),
+      allowNull: false
     }
   })
-
-  Award.associate = function (models) {
-    Award.belongsTo(models.investigator)
+  Event.associate = function (models) {
+    Event.belongsTo(models.investigator)
   }
-  Award.loadScopes = (models) => {
-    Award.addScope('posts', () => {
+
+  Event.loadScopes = (models) => {
+    Event.addScope('posts', () => {
       return {
         attributes: ['id',
           'title',
           'createdAt',
-          [models.Sequelize.col('investigator.name'), 'author']
+          [models.Sequelize.col('investigator.name'), 'author'],
+          [models.Sequelize.literal(`'event'`), 'type']
         ],
         include: [{
           model: models.investigator,
@@ -45,6 +46,5 @@ module.exports = function (sequelize, Sequelize) {
       }
     })
   }
-
-  return Award
+  return Event
 }

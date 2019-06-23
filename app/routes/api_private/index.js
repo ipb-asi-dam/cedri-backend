@@ -8,7 +8,6 @@ router.use('/software', require('./investigator/software'))
 router.use('/theses', require('./investigator/these'))
 router.use('/awards', require('./investigator/award'))
 router.use('/projects', require('./investigator/project'))
-router.use('/posts', require('./investigator/show/post'))
 router.use(isAdmin)
 router.use('/communications', require('./admin/communication'))
 module.exports = router
