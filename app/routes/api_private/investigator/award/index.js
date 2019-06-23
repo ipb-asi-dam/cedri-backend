@@ -62,13 +62,40 @@ router.put('/:id', hasPermission, async (req, res) => {
     return res
       .status(200)
       .jsend
-      .success(await Award.findByPk(id))
+      .success(await Award.scope('posts').findByPk(id))
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
       .error({ message: 'Erro ao realizer upgrade no prêmio com id' + id })
+  }
+})
+
+router.delete('/:id', async (req, res) => {
+  const id = +req.params.id
+  try {
+    const award = await Award.destroy({
+      where: {
+        id
+      }
+    })
+    if (!award) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Prêmio com id ' + id + ' não encontrado' })
+    }
+    return res
+      .status(200)
+      .jsend
+      .success({ message: 'Prêmio deletado com sucesso!' })
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao deletar prêmio com id ' + id })
   }
 })
 
