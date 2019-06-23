@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const { check, validationResult } = require('express-validator/check')
 const { patent: Patent } = require('../../../../models')
-const { hasPermission } = require('../../../../middleweres')
+const { hasPermissionPosts } = require('../../../../middleweres')
 router.post('/', [
   check('title')
     .exists()
@@ -40,7 +40,7 @@ router.post('/', [
   }
 })
 
-router.put('/:id', hasPermission, async (req, res) => {
+router.put('/:id', async (req, res) => {
   const id = +req.params.id
   const patent = req.body
   try {
@@ -51,6 +51,12 @@ router.put('/:id', hasPermission, async (req, res) => {
         .jsend
         .fail({ message: 'Patent com id ' + id + ' não existe' })
     }
+    if (!hasPermissionPosts(req.user, _patent.investigatorId)) {
+      return res
+        .status(401)
+        .jsend
+        .fail({ message: 'Sem permissão para editar esse post' })
+    }
     await Patent.update(patent, {
       where: {
         id
@@ -59,7 +65,7 @@ router.put('/:id', hasPermission, async (req, res) => {
     return res
       .status(200)
       .jsend
-      .success(await Patent.findByPk(id))
+      .success(await Patent.scope('posts').findByPk(id))
   } catch (err) {
     console.log(err)
     return res
