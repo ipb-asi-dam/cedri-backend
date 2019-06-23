@@ -1,21 +1,36 @@
 const router = require('express').Router()
 const models = require('../../../../../models')
 const { investigator: Investigator, file: File } = models
-const { isAdmin, hasPermission } = require('../../../../../middleweres')
+const { isAdmin, hasPermission, pagination } = require('../../../../../middleweres')
 
-router.get('/', isAdmin, async (req, res) => {
+router.get('/', [
+  isAdmin,
+  pagination
+], async (req, res) => {
   try {
+    const limit = req.query.limit
+    const page = req.query.page
+    const offset = limit * (page - 1)
     let users
     const query = req.query
     if (query.showDeleted === false || query.showDeleted === 'false') {
-      users = await Investigator.scope('complete').findAll()
+      users = await Investigator.scope('complete').findAndCountAll({
+        limit,
+        offset
+      })
     } else {
-      users = await Investigator.scope('complete').findAll({ paranoid: false })
+      users = await Investigator.scope('complete').findAndCountAll({
+        limit,
+        offset,
+        paranoid: false
+      })
     }
+    const countTotal = users.count
+    const pagesTotal = Math.ceil(countTotal / limit)
     return res
       .status(200)
       .jsend
-      .success(users)
+      .success({ users: users.rows, pagesTotal, countTotal })
   } catch (err) {
     return res
       .status(500)
