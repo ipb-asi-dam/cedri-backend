@@ -90,7 +90,7 @@ router.post('/', [
 router.post('/:id/undelete', isAdmin, async (req, res) => {
   const id = +req.params.id
   try {
-    const investigator = await Investigator.findByPk(id, { paranoid: false })
+    const investigator = await Investigator.scope('complete').findByPk(id, { paranoid: false })
     if (!investigator) {
       return res
         .status(404)
@@ -101,7 +101,7 @@ router.post('/:id/undelete', isAdmin, async (req, res) => {
     return res
       .status(200)
       .jsend
-      .success({ message: 'Usuário com id ' + id + ' restaurado' })
+      .success(investigator)
   } catch (err) {
     return res
       .status(500)
