@@ -9,8 +9,12 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false
     },
-    description: {
+    url: {
       type: Sequelize.STRING,
+      allowNull: true
+    },
+    description: {
+      type: Sequelize.STRING(2000),
       allowNull: true
     },
     startDate: {
@@ -19,6 +23,10 @@ module.exports = function (sequelize, Sequelize) {
     },
     endDate: {
       type: Sequelize.DATE,
+      allowNull: true
+    },
+    local: {
+      type: Sequelize.STRING,
       allowNull: true
     },
     type: {

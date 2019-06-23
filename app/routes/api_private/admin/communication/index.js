@@ -6,15 +6,15 @@ const { hasPermission } = require('../../../../middleweres')
 
 router.post('/', [
   hasPermission,
-  check('name')
+  check('title')
     .exists()
-    .withMessage('Campo name não pode ser nulo')
+    .withMessage('Campo title não pode ser nulo')
     .toString(),
   check('url')
     .optional()
-    .withMessage('Campo ur não pode ser nulo')
+    .withMessage('Campo url não pode ser nulo')
     .toString(),
-  check('context')
+  check('description')
     .optional()
     .toString(),
   check('startDate')
@@ -112,11 +112,11 @@ router.get('/types/:type', [
 
 router.put('/:id', [
   hasPermission,
-  check('name')
+  check('title')
     .optional(),
   check('url')
     .optional(),
-  check('context')
+  check('description')
     .optional(),
   check('startDate')
     .optional()
