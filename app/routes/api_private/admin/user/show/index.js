@@ -30,7 +30,7 @@ router.get('/', [
     return res
       .status(200)
       .jsend
-      .success({ users: users.rows, pagesTotal, countTotal })
+      .success({ elements: users.rows, pagesTotal, countTotal })
   } catch (err) {
     return res
       .status(500)

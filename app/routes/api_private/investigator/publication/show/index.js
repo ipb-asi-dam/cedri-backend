@@ -28,7 +28,7 @@ router.get('/', pagination, async (req, res) => {
     return res
       .status(200)
       .jsend
-      .success({ publications: publications.rows, pagesTotal, countTotal })
+      .success({ elements: publications.rows, pagesTotal, countTotal })
   } catch (err) {
     console.log(err)
     return res
