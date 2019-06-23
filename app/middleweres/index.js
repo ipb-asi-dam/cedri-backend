@@ -69,4 +69,18 @@ middlewares.hasPermission = (req, res, next) => {
   }
 }
 
+middlewares.hasPermissionPosts = (user, investigatorId) => {
+  if (user.isAdmin !== true && +user.id !== +investigatorId) {
+    return false
+  }
+  return true
+}
+
+middlewares.pagination = (req, res, next) => {
+  req.query.limit = +req.query.limit || 15
+  req.query.page = +req.query.page || 1
+  if (req.query.limit <= 0) req.query.limit = 15
+  if (req.query.page <= 0) req.query.page = 1
+  next()
+}
 module.exports = middlewares
