@@ -45,7 +45,7 @@ middlewares.isValidToken = async (req, res, next) => {
 
 middlewares.isAdmin = (req, res, next) => {
   if (req.user.isAdmin === true) {
-    next()
+    return next()
   } else {
     return res
       .status(401)
