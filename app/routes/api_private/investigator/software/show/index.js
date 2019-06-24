@@ -16,7 +16,7 @@ router.get('/', pagination, async (req, res) => {
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar todos os prêmios' })
+      .error({ message: 'Erro ao retornar todos os software' })
   }
 })
 
