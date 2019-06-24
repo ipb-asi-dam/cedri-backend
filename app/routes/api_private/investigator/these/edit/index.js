@@ -1,8 +1,28 @@
 const router = require('express').Router()
 const { these: These } = require('../../../../../models')
 const { hasPermissionPosts } = require('../../../../../middleweres')
+const { check, validationResult } = require('express-validator/check')
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', [
+  check('type')
+    .optional()
+    .toString()
+    .matches('^phd$|^msc$')
+    .withMessage('parâmetro type precisa ser (phd ou msc)'),
+  check('date')
+    .optional()
+    .isISO8601()
+    .withMessage('Formato date errado. Valor esperado (YYYY ou YYYY-MM ou YYYY-MM-DD')
+
+], async (req, res) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res
+      .status(422)
+      .jsend
+      .fail({ errors: errors.array() })
+  }
+
   const id = +req.params.id
   const these = req.body
   try {

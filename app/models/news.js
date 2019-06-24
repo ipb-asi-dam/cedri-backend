@@ -10,12 +10,13 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: false
     },
     description: {
-      type: Sequelize.STRING(5000),
+      type: Sequelize.STRING(7000),
       allowNull: false
     }
   })
   News.associate = function (models) {
     News.belongsTo(models.file)
+    News.belongsTo(models.investigator)
   }
 
   News.loadScopes = (models) => {
@@ -24,8 +25,7 @@ module.exports = function (sequelize, Sequelize) {
         attributes: ['id',
           'title',
           'createdAt',
-          [models.Sequelize.col('investigator.name'), 'author'],
-          [models.Sequelize.literal(`'news'`), 'type']
+          [models.Sequelize.col('investigator.name'), 'author']
         ],
         include: [{
           model: models.investigator,

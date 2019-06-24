@@ -2,39 +2,21 @@ const router = require('express').Router()
 const models = require('../../../../../models')
 const { software: Software } = models
 const { pagination } = require('../../../../../middleweres')
+const getPages = require('../../../../../config/global_modules/getPosts')
 
 router.get('/', pagination, async (req, res) => {
   try {
-    const limit = req.query.limit
-    const page = req.query.page
-    const offset = limit * (page - 1)
-    let software
-    if (req.user.isAdmin !== true) {
-      software = await Software.scope('posts').findAndCountAll({
-        limit,
-        offset,
-        where: {
-          investigatorId: +req.user.id
-        }
-      })
-    } else {
-      software = await Software.scope('posts').findAndCountAll({
-        limit,
-        offset
-      })
-    }
-    const pagesTotal = Math.ceil(software.count / limit)
-    const countTotal = software.count
+    const paginationResult = await getPages(req, Software)
     return res
       .status(200)
       .jsend
-      .success({ elements: software.rows, pagesTotal, countTotal })
+      .success(paginationResult)
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar todos os software' })
+      .error({ message: 'Erro ao retornar todos os prêmios' })
   }
 })
 

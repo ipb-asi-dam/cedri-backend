@@ -2,33 +2,15 @@ const router = require('express').Router()
 const model = require('../../../../../models')
 const { hasPermissionPosts, pagination } = require('../../../../../middleweres')
 const { award: Award } = model
+const getPages = require('../../../../../config/global_modules/getPosts')
 
 router.get('/', pagination, async (req, res) => {
   try {
-    const limit = req.query.limit
-    const page = req.query.page
-    const offset = limit * (page - 1)
-    let awards
-    if (req.user.isAdmin !== true) {
-      awards = await Award.scope('posts').findAndCountAll({
-        limit,
-        offset,
-        where: {
-          investigatorId: +req.user.id
-        }
-      })
-    } else {
-      awards = await Award.scope('posts').findAndCountAll({
-        limit,
-        offset
-      })
-    }
-    const pagesTotal = Math.ceil(awards.count / limit)
-    const countTotal = awards.count
+    const paginationResult = await getPages(req, Award)
     return res
       .status(200)
       .jsend
-      .success({ elements: awards.rows, pagesTotal, countTotal })
+      .success(paginationResult)
   } catch (err) {
     console.log(err)
     return res

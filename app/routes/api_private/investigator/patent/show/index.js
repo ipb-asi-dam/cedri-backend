@@ -1,41 +1,24 @@
 const router = require('express').Router()
 const { patent: Patent } = require('../../../../../models')
 const { pagination } = require('../../../../../middleweres')
+const getPages = require('../../../../../config/global_modules/getPosts')
 
 router.get('/', pagination, async (req, res) => {
   try {
-    const limit = req.query.limit
-    const page = req.query.page
-    const offset = limit * (page - 1)
-    let patents
-    if (req.user.isAdmin !== true) {
-      patents = await Patent.scope('posts').findAndCountAll({
-        limit,
-        offset,
-        where: {
-          investigatorId: +req.user.id
-        }
-      })
-    } else {
-      patents = await Patent.scope('posts').findAndCountAll({
-        limit,
-        offset
-      })
-    }
-    const pagesTotal = Math.ceil(patents.count / limit)
-    const countTotal = patents.count
+    const paginationResult = await getPages(req, Patent)
     return res
       .status(200)
       .jsend
-      .success({ elements: patents.rows, pagesTotal, countTotal })
+      .success(paginationResult)
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar todas as patentes' })
+      .error({ message: 'Erro ao retornar todos os prêmios' })
   }
 })
+
 router.get('/:id', async (req, res) => {
   const id = +req.params.id
   try {

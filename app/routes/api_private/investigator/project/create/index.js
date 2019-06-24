@@ -16,7 +16,9 @@ router.post('/', [
     .trim(),
   check('fundedBy')
     .exists()
-    .withMessage('Campo fundedBy não pode ser nulo'),
+    .withMessage('Campo fundedBy não pode ser nulo')
+    .toString()
+    .trim(),
   check('startDate')
     .exists()
     .withMessage('Campo startDate não pode ser nulo')
