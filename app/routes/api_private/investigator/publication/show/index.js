@@ -2,33 +2,15 @@ const router = require('express').Router()
 const models = require('../../../../../models')
 const Publication = models.publication
 const { pagination } = require('../../../../../middleweres')
+const getPages = require('../../../../../config/global_modules/getPosts')
 
 router.get('/', pagination, async (req, res) => {
   try {
-    const limit = req.query.limit
-    const page = req.query.page
-    const offset = limit * (page - 1)
-    let publications
-    if (req.user.isAdmin !== true) {
-      publications = await Publication.scope('posts').findAndCountAll({
-        limit,
-        offset,
-        where: {
-          investigatorId: +req.user.id
-        }
-      })
-    } else {
-      publications = await Publication.scope('posts').findAndCountAll({
-        limit,
-        offset
-      })
-    }
-    const pagesTotal = Math.ceil(publications.count / limit)
-    const countTotal = publications.count
+    const paginationResult = await getPages(req, Publication)
     return res
       .status(200)
       .jsend
-      .success({ elements: publications.rows, pagesTotal, countTotal })
+      .success(paginationResult)
   } catch (err) {
     console.log(err)
     return res

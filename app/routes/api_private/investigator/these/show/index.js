@@ -1,42 +1,23 @@
 const router = require('express').Router()
 const { these: These } = require('../../../../../models')
 const { hasPermissionPosts, pagination } = require('../../../../../middleweres')
+const getPages = require('../../../../../config/global_modules/getPosts')
 
 router.get('/', pagination, async (req, res) => {
   try {
-    const limit = req.query.limit
-    const page = req.query.page
-    const offset = limit * (page - 1)
-    let theses
-    if (req.user.isAdmin !== true) {
-      theses = await These.scope('posts').findAndCountAll({
-        limit,
-        offset,
-        where: {
-          investigatorId: +req.user.id
-        }
-      })
-    } else {
-      theses = await These.scope('posts').findAndCountAll({
-        limit,
-        offset
-      })
-    }
-    const pagesTotal = Math.ceil(theses.count / limit)
-    const countTotal = theses.count
+    const paginationResult = await getPages(req, These)
     return res
       .status(200)
       .jsend
-      .success({ elements: theses.rows, pagesTotal, countTotal })
+      .success(paginationResult)
   } catch (err) {
     console.log(err)
     return res
       .status(500)
       .jsend
-      .error({ message: 'Erro ao retornar todos os software' })
+      .error({ message: 'Erro ao retornar todas as teses' })
   }
 })
-
 router.get('/:id', async (req, res) => {
   const id = +req.params.id
   try {

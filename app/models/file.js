@@ -22,6 +22,7 @@ module.exports = function (sequelize, Sequelize) {
   })
   File.associate = function (models) {
     File.hasOne(models.investigator)
+    File.hasOne(models.news)
     File.hasOne(models.software)
     File.hasOne(models.project)
     File.belongsToMany(models.media, {
