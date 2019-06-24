@@ -2,8 +2,9 @@ module.exports = async (req, Model) => {
   const limit = req.query.limit
   const page = req.query.page
   const offset = limit * (page - 1)
+  const showMy = (req.query.showMy === 'true' || req.query.showMy === true)
   let elements
-  if (req.user.isAdmin !== true) {
+  if (req.user.isAdmin !== true || showMy) {
     elements = await Model.scope('posts').findAndCountAll({
       limit,
       offset,
