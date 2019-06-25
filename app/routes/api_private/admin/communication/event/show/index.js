@@ -18,4 +18,26 @@ router.get('/', pagination, async (req, res) => {
       .error({ message: 'Erro ao retornar todos os eventos' })
   }
 })
+router.get('/:id', async (req, res) => {
+  const id = +req.params.id
+  try {
+    const event = await Event.findByPk(id)
+    if (!event) {
+      return res
+        .status(404)
+        .jsend
+        .fail({ message: 'Evento com id ' + id + ' não encontrado' })
+    }
+    return res
+      .status(200)
+      .jsend
+      .success(event)
+  } catch (err) {
+    console.log(err)
+    return res
+      .status(500)
+      .jsend
+      .error({ message: 'Erro ao retornar todos os eventos' })
+  }
+})
 module.exports = router

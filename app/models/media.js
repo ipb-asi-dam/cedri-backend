@@ -33,15 +33,15 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
-    // Media.addScope('complete', () => {
-    //   return {
-    //     include: [{
-    //       model: models.file,
-    //       as: 'files',
-    //       attributes: ['id', 'mimetype', 'md5']
-    //     }]
-    //   }
-    // })
+    Media.addScope('complete', () => {
+      return {
+        attributes: { exclude: ['fileId'] },
+        include: [{
+          model: models.file,
+          attributes: ['id', 'mimetype', 'md5']
+        }]
+      }
+    })
   }
   return Media
 }
