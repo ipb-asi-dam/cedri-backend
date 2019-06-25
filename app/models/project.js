@@ -67,6 +67,15 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    Project.addScope('complete', () => {
+      return {
+        attributes: { exclude: ['fileId'] },
+        include: [{
+          model: models.file,
+          attributes: ['id', 'md5', 'mimetype']
+        }]
+      }
+    })
   }
   return Project
 }
