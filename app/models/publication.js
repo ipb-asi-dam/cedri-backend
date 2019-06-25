@@ -13,7 +13,7 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING(500),
       allowNull: false
     },
-    year: {
+    date: {
       type: Sequelize.DATE,
       allowNull: false
     },
@@ -66,14 +66,13 @@ module.exports = function (sequelize, Sequelize) {
   Publication.loadScopes = (models) => {
     Publication.addScope('complete', () => {
       return {
-
         attributes: {
           exclude: [ 'investigatorId' ]
         },
         include: [
           {
             model: models.investigator,
-            attributes: ['id', 'name', 'bio', 'isAdmin', 'occupation']
+            attributes: ['id', 'name', 'email', 'isAdmin']
           }
         ]
       }

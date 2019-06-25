@@ -6,11 +6,11 @@ module.exports = function (sequelize, Sequelize) {
       autoIncrement: true
     },
     title: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(500),
       allowNull: false
     },
     description: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(3000),
       allowNull: false
     },
     fundedBy: {
@@ -69,11 +69,17 @@ module.exports = function (sequelize, Sequelize) {
     })
     Project.addScope('complete', () => {
       return {
-        attributes: { exclude: ['fileId'] },
-        include: [{
-          model: models.file,
-          attributes: ['id', 'md5', 'mimetype']
-        }]
+        attributes: { exclude: ['investigatorId', 'fileId'] },
+        include: [
+          {
+            model: models.file,
+            attributes: ['id', 'md5', 'mimetype']
+          },
+          {
+            model: models.investigator,
+            attributes: ['id', 'name', 'isAdmin', 'email']
+          }
+        ]
       }
     })
   }

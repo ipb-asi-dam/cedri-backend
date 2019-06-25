@@ -8,7 +8,7 @@ router.put('/:id', async (req, res) => {
   const extraFile = (req.files || {}).extraFile
   try {
     await models.sequelize.transaction(async (transaction) => {
-      const _media = await Media.scope('complete').findByPk(id)
+      const _media = await Media.findByPk(id)
       if (!_media) {
         return res
           .status(404)

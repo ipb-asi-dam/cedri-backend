@@ -23,7 +23,7 @@ router.get('/', pagination, async (req, res) => {
 router.get('/:id', async (req, res) => {
   const id = +req.params.id
   try {
-    const publication = await Publication.findByPk(id)
+    const publication = await Publication.scope('complete').findByPk(id)
     if (!publication) {
       return res
         .status(404)

@@ -9,9 +9,9 @@ router.post('/', [
     .withMessage('Campo title não pode ser nulo')
     .toString()
     .trim(),
-  check('description')
+  check('descriptionHtml')
     .exists()
-    .withMessage('Campo title não pode ser nulo')
+    .withMessage('Campo descriptionHtml não pode ser nulo')
     .toString()
     .trim()
 ], async (req, res) => {

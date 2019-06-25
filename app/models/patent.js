@@ -13,9 +13,9 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING(1024),
       allowNull: false
     },
-    patentNumbers: {
-      type: Sequelize.STRING(5000),
-      allowNull: true
+    patentNumbersHtml: {
+      type: Sequelize.TEXT('medium'),
+      allowNull: false
     }
   })
   Patent.associate = function (models) {
@@ -41,6 +41,17 @@ module.exports = function (sequelize, Sequelize) {
         attributes: {
           exclude: ['investigatorId']
         }
+      }
+    })
+    Patent.addScope('complete', () => {
+      return {
+        attributes: { exclude: ['investigatorId'] },
+        include: [
+          {
+            model: models.investigator,
+            attributes: ['id', 'name', 'isAdmin', 'email']
+          }
+        ]
       }
     })
   }

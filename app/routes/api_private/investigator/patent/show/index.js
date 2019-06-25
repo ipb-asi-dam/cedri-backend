@@ -22,7 +22,7 @@ router.get('/', pagination, async (req, res) => {
 router.get('/:id', async (req, res) => {
   const id = +req.params.id
   try {
-    const patent = await Patent.findByPk(id)
+    const patent = await Patent.scope('complete').findByPk(id)
     if (!patent) {
       return res
         .status(404)

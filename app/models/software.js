@@ -10,7 +10,7 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: false
     },
     description: {
-      type: Sequelize.STRING(1024),
+      type: Sequelize.STRING(3000),
       allowNull: false
     }
   })
@@ -34,11 +34,17 @@ module.exports = function (sequelize, Sequelize) {
     })
     Software.addScope('complete', () => {
       return {
-        attributes: { exclude: ['fileId'] },
-        include: [{
-          model: models.file,
-          attributes: ['id', 'md5', 'mimetype']
-        }]
+        attributes: { exclude: ['fileId', 'investigatorId'] },
+        include: [
+          {
+            model: models.file,
+            attributes: ['id', 'md5', 'mimetype']
+          },
+          {
+            model: models.investigator,
+            attributes: ['id', 'name', 'isAdmin', 'email']
+          }
+        ]
       }
     })
     Software.addScope('public', () => {

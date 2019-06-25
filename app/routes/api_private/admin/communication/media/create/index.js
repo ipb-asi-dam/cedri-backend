@@ -6,6 +6,10 @@ router.post('/', [
   check('title')
     .exists()
     .withMessage('Campo title não pode ser nulo')
+    .toString(),
+  check('descriptionHtml')
+    .exists()
+    .withMessage('Campo descriptionHtml não pode ser nulo')
     .toString()
 ], async (req, res) => {
   const errors = validationResult(req)

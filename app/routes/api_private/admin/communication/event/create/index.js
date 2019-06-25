@@ -22,7 +22,7 @@ router.post('/', [
     .exists()
     .withMessage('Campo address não pode ser nulo')
     .toString(),
-  check('links')
+  check('linksHtml')
     .exists()
     .withMessage('Campo links não pode ser nulo')
     .toString()

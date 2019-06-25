@@ -23,7 +23,7 @@ router.get('/', pagination, async (req, res) => {
 router.get('/:id', async (req, res) => {
   const id = +req.params.id
   try {
-    const award = await Award.findByPk(id)
+    const award = await Award.scope('complete').findByPk(id)
     if (!award) {
       return res
         .status(404)

@@ -5,7 +5,7 @@ const Publication = models.publication
 const { hasPermissionPosts } = require('../../../../../middleweres')
 
 router.put('/:id', [
-  check('year')
+  check('date')
     .optional()
     .isISO8601()
     .withMessage('Formato date errado. Valor esperado YYYY'),

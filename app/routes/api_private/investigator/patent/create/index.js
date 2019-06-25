@@ -13,8 +13,9 @@ router.post('/', [
     .withMessage('Campo authors não pode ser nulo')
     .toString()
     .trim(),
-  check('patentNumbers')
-    .optional()
+  check('patentNumbersHtml')
+    .exists()
+    .withMessage('Campo patentNumbersHtml não pode ser nulo')
     .toString()
 ], async (req, res) => {
   const errors = validationResult(req)

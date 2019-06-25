@@ -9,8 +9,8 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING(500),
       allowNull: false
     },
-    description: {
-      type: Sequelize.STRING(7000),
+    descriptionHtml: {
+      type: Sequelize.TEXT('medium'),
       allowNull: false
     }
   })
@@ -35,11 +35,17 @@ module.exports = function (sequelize, Sequelize) {
     })
     News.addScope('complete', () => {
       return {
-        attributes: { exclude: ['fileId'] },
-        include: [{
-          model: models.file,
-          attributes: ['id', 'md5', 'mimetype']
-        }]
+        attributes: { exclude: ['fileId', 'investigatorId'] },
+        include: [
+          {
+            model: models.file,
+            attributes: ['id', 'md5', 'mimetype']
+          },
+          {
+            model: models.investigator,
+            attributes: ['id', 'name', 'isAdmin', 'email']
+          }
+        ]
       }
     })
 

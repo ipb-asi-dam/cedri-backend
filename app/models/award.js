@@ -51,6 +51,17 @@ module.exports = function (sequelize, Sequelize) {
         }
       }
     })
+    Award.addScope('complete', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId']
+        },
+        include: [{
+          model: models.investigator,
+          attributes: ['id', 'name', 'isAdmin', 'email']
+        }]
+      }
+    })
   }
 
   return Award

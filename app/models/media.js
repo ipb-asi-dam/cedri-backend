@@ -9,9 +9,9 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING(500),
       allowNull: false
     },
-    description: {
-      type: Sequelize.STRING(10000),
-      allowNull: true
+    descriptionHtml: {
+      type: Sequelize.TEXT('medium'),
+      allowNull: false
     }
   })
   Media.associate = function (models) {
@@ -35,11 +35,17 @@ module.exports = function (sequelize, Sequelize) {
     })
     Media.addScope('complete', () => {
       return {
-        attributes: { exclude: ['fileId'] },
-        include: [{
-          model: models.file,
-          attributes: ['id', 'mimetype', 'md5']
-        }]
+        attributes: { exclude: ['fileId', 'investigatorId'] },
+        include: [
+          {
+            model: models.file,
+            attributes: ['id', 'mimetype', 'md5']
+          },
+          {
+            model: models.investigator,
+            attributes: ['id', 'name', 'isAdmin', 'email']
+          }
+        ]
       }
     })
     Media.addScope('public', () => {

@@ -12,9 +12,9 @@ router.post('/', [
     .exists()
     .withMessage('title não pode ser nulo')
     .toString(),
-  check('year')
+  check('date')
     .exists()
-    .withMessage('year não pode ser nulo')
+    .withMessage('date não pode ser nulo')
     .isISO8601()
     .withMessage('Formato date errado. Valor esperado YYYY'),
   check('sourceTitle')

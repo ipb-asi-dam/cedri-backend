@@ -21,8 +21,8 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false
     },
-    links: {
-      type: Sequelize.STRING(5000),
+    linksHtml: {
+      type: Sequelize.TEXT('medium'),
       allowNull: false
     }
   })
@@ -49,6 +49,17 @@ module.exports = function (sequelize, Sequelize) {
         attributes: {
           exclude: ['investigatorId']
         }
+      }
+    })
+    Event.addScope('complete', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId']
+        },
+        include: [{
+          model: models.investigator,
+          attributes: ['id', 'name', 'isAdmin', 'email']
+        }]
       }
     })
   }
