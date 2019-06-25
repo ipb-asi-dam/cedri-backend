@@ -8,6 +8,8 @@ router.use('/software', require('./investigator/software'))
 router.use('/theses', require('./investigator/these'))
 router.use('/awards', require('./investigator/award'))
 router.use('/projects', require('./investigator/project'))
+router.use('/statistics', require('./statistic'))
+
 router.use(isAdmin)
 router.use('/news', require('./admin/communication/news'))
 router.use('/events', require('./admin/communication/event'))

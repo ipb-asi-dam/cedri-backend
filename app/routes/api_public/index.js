@@ -3,7 +3,6 @@ const router = require('express').Router()
 router.use('/authenticate', require('./authenticate'))
 router.use('/recover', require('./recover'))
 router.use('/files', require('./files'))
-router.use('/statistics', require('./statistic'))
 // communications
 router.use('/medias', require('./show/communications/medias'))
 router.use('/events', require('./show/communications/events'))
