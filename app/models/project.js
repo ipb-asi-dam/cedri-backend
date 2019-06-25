@@ -53,6 +53,15 @@ module.exports = function (sequelize, Sequelize) {
         attributes: ['id', 'title', 'isAccepted']
       }
     })
+    Project.addScope('public', () => {
+      return {
+        attributes: { exclude: ['fileId', 'investigatorId'] },
+        include: [{
+          model: models.file,
+          attributes: ['id', 'mimetype', 'md5']
+        }]
+      }
+    })
     Project.addScope('posts', () => {
       return {
         attributes: ['id',
