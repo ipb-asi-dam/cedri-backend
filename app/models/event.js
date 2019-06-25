@@ -44,6 +44,13 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    Event.addScope('public', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId']
+        }
+      }
+    })
   }
   return Event
 }

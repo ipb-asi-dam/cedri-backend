@@ -36,6 +36,13 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    Patent.addScope('public', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId']
+        }
+      }
+    })
   }
   return Patent
 }

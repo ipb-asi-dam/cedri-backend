@@ -42,6 +42,17 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    Media.addScope('public', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId', 'fileId']
+        },
+        include: [{
+          model: models.file,
+          attributes: ['id', 'mimetype', 'md5']
+        }]
+      }
+    })
   }
   return Media
 }

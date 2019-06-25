@@ -41,6 +41,17 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    Software.addScope('public', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId', 'fileId']
+        },
+        include: [{
+          model: models.file,
+          attributes: ['id', 'mimetype', 'md5']
+        }]
+      }
+    })
   }
 
   return Software

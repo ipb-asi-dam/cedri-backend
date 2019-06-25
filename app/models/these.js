@@ -56,6 +56,13 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    These.addScope('public', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId']
+        }
+      }
+    })
   }
   return These
 }

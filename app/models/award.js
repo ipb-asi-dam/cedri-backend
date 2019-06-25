@@ -44,6 +44,13 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    Award.addScope('public', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId']
+        }
+      }
+    })
   }
 
   return Award

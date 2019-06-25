@@ -91,6 +91,13 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    Publication.addScope('public', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId']
+        }
+      }
+    })
   }
 
   return Publication
