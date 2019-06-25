@@ -63,6 +63,17 @@ module.exports = function (sequelize, Sequelize) {
         }
       }
     })
+    These.addScope('complete', () => {
+      return {
+        attributes: {
+          exclude: ['investigatorId']
+        },
+        include: [{
+          model: models.investigator,
+          attributes: ['id', 'name', 'isAdmin', 'email']
+        }]
+      }
+    })
   }
   return These
 }

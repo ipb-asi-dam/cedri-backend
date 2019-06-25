@@ -2,10 +2,13 @@ const router = require('express').Router()
 
 router.use('/authenticate', require('./authenticate'))
 router.use('/recover', require('./recover'))
-router.use('/images', require('./images'))
+router.use('/files', require('./files'))
 router.use('/statistics', require('./statistic'))
 // communications
 router.use('/medias', require('./show/communications/medias'))
+router.use('/events', require('./show/communications/events'))
+router.use('/news', require('./show/communications/news'))
+
 // outcomes
 router.use('/awards', require('./show/outcomes/awards'))
 router.use('/patents', require('./show/outcomes/patents'))

@@ -21,7 +21,7 @@ router.get('/', pagination, async (req, res) => {
 router.get('/:id', async (req, res) => {
   const id = +req.params.id
   try {
-    const _these = await These.findByPk(id)
+    const _these = await These.scope('complete').findByPk(id)
     if (!_these) {
       return res
         .status(404)
