@@ -25,11 +25,7 @@ module.exports = function (sequelize, Sequelize) {
     File.hasOne(models.news)
     File.hasOne(models.software)
     File.hasOne(models.project)
-    File.belongsToMany(models.media, {
-      through: 'mediaHasManyFiles',
-      as: 'media',
-      foreignKey: 'fileId'
-    })
+    File.hasOne(models.media)
   }
   File.loadScopes = (models) => {
     File.addScope('basic', () => {

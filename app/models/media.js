@@ -10,17 +10,13 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: false
     },
     links: {
-      type: Sequelize.STRING(5000),
+      type: Sequelize.STRING(10000),
       allowNull: true
     }
   })
   Media.associate = function (models) {
     Media.belongsTo(models.investigator)
-    Media.belongsToMany(models.file, {
-      through: 'mediaHasManyFiles',
-      as: 'files',
-      foreignKey: 'mediaId'
-    })
+    Media.belongsTo(models.file)
   }
 
   Media.loadScopes = (models) => {
@@ -37,6 +33,15 @@ module.exports = function (sequelize, Sequelize) {
         }]
       }
     })
+    // Media.addScope('complete', () => {
+    //   return {
+    //     include: [{
+    //       model: models.file,
+    //       as: 'files',
+    //       attributes: ['id', 'mimetype', 'md5']
+    //     }]
+    //   }
+    // })
   }
   return Media
 }

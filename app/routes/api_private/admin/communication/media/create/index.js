@@ -16,21 +16,14 @@ router.post('/', [
       .fail({ errors: errors.array() })
   }
   const media = req.body
-  const image = (req.files || {}).image
   const extraFile = (req.files || {}).extraFile
   try {
     const mediaCreated = await models.sequelize.transaction(async (transaction) => {
-      const mediaCreated = await Media.create(media, { transaction })
-      if (image) {
-        const file = await File.create(image, { transaction })
-        await mediaCreated.addFiles(file, { transaction })
-      }
       if (extraFile) {
         const file = await File.create(extraFile, { transaction })
-        await mediaCreated.addFiles(file, { transaction })
+        media.fileId = file.id
       }
-
-      return mediaCreated
+      return Media.create(media, { transaction })
     })
     return res
       .status(200)
