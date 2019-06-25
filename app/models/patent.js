@@ -28,6 +28,7 @@ module.exports = function (sequelize, Sequelize) {
         attributes: ['id',
           'title',
           'createdAt',
+          'authors',
           [models.Sequelize.col('investigator.name'), 'author']
         ],
         include: [{

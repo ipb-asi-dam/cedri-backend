@@ -11,7 +11,7 @@ router.post('/', [
     .trim(),
   check('description')
     .exists()
-    .withMessage('Campo authors não pode ser nulo')
+    .withMessage('Campo description não pode ser nulo')
     .toString()
     .trim(),
   check('fundedBy')

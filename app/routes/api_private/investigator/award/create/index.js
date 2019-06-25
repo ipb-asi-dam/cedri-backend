@@ -14,6 +14,11 @@ router.post('/', [
     .withMessage('Campo prizeWinners não pode ser nulo')
     .toString()
     .trim(),
+  check('event')
+    .exists()
+    .withMessage('Campo event não pode ser nulo')
+    .toString()
+    .trim(),
   check('date')
     .exists()
     .withMessage('Campo date não pode ser nulo')

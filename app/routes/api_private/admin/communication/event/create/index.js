@@ -24,7 +24,7 @@ router.post('/', [
     .toString(),
   check('linksHtml')
     .exists()
-    .withMessage('Campo links não pode ser nulo')
+    .withMessage('Campo linksHtml não pode ser nulo')
     .toString()
 ], async (req, res) => {
   const errors = validationResult(req)
