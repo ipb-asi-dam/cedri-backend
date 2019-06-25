@@ -3,7 +3,7 @@ const { check, validationResult } = require('express-validator/check')
 const models = require('../../../../../../models')
 const { event: Event } = models
 
-router.post('/:id', [
+router.put('/:id', [
   check('startDate')
     .optional()
     .isISO8601()

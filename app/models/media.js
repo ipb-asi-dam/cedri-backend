@@ -9,7 +9,7 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING(500),
       allowNull: false
     },
-    links: {
+    description: {
       type: Sequelize.STRING(10000),
       allowNull: true
     }
