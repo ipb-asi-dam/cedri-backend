@@ -23,7 +23,7 @@ module.exports = function (sequelize, Sequelize) {
     },
     event: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: false
     }
   })
 
@@ -36,6 +36,9 @@ module.exports = function (sequelize, Sequelize) {
         attributes: ['id',
           'title',
           'createdAt',
+          'event',
+          'prizeWinners',
+          'date',
           [models.Sequelize.col('investigator.name'), 'author']
         ],
         include: [{
