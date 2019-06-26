@@ -19,12 +19,23 @@ router.get('/:type', [
       .fail({ errors: errors.array() })
   }
   const type = req.params.type
+  const showAccepted = (req.query.showAccepted === true || req.query.showAccepted === 'true')
   try {
-    const elements = await getPublicPosts(req, models.project, {
-      where: {
-        type
-      }
-    })
+    let elements
+    if (req.query.showAccepted) {
+      elements = await getPublicPosts(req, models.project, {
+        where: {
+          type,
+          isAccepted: showAccepted
+        }
+      })
+    } else {
+      elements = await getPublicPosts(req, models.project, {
+        where: {
+          type
+        }
+      })
+    }
     return res
       .status(200)
       .jsend
