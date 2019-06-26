@@ -48,7 +48,8 @@ router.post('/', [
     .isEmail()
     .withMessage('O campo email é inválido'),
   check('name', 'Atributo name não pode ser nulo')
-    .exists(),
+    .exists()
+    .toString(),
   check('isAdmin', 'Atributo isAdmin não pode ser nulo')
     .exists()
     .isBoolean()
