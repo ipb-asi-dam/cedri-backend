@@ -18,7 +18,7 @@ module.exports = function (sequelize, Sequelize) {
       allowNull: false
     },
     consortium: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(2000),
       allowNull: true
     },
     startDate: {

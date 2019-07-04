@@ -12,6 +12,10 @@ module.exports = function (sequelize, Sequelize) {
     descriptionHtml: {
       type: Sequelize.TEXT('medium'),
       allowNull: false
+    },
+    extraFileText: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   })
   Media.associate = function (models) {
