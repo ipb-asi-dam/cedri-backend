@@ -4,41 +4,41 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.INTEGER(11),
       primaryKey: true,
       autoIncrement: true
-    },
-    title: {
-      type: Sequelize.STRING(500),
-      allowNull: false
-    },
-    description: {
-      type: Sequelize.STRING(3000),
-      allowNull: false
-    },
-    fundedBy: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    consortium: {
-      type: Sequelize.STRING,
-      allowNull: true
-    },
-    startDate: {
-      type: Sequelize.DATE,
-      allowNull: false
-    },
-    endDate: {
-      type: Sequelize.DATE,
-      allowNull: false
-    },
-    webPage: {
-      type: Sequelize.STRING(2000),
-      allowNull: true
-    },
-    isAccepted: {
-      type: Sequelize.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
-    },
-    type: {
+      },
+      title: {
+        type: Sequelize.STRING(500),
+        allowNull: false
+      },
+      description: {
+        type: Sequelize.STRING(3000),
+        allowNull: false
+      },
+      fundedBy: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      consortium: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      startDate: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      endDate: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      webPage: {
+        type: Sequelize.STRING(2000),
+        allowNull: true
+      },
+      isAccepted: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      type: {
       type: Sequelize.ENUM('international', 'national', 'other'),
       allowNull: false
     }
@@ -68,7 +68,10 @@ module.exports = function (sequelize, Sequelize) {
           'title',
           'createdAt',
           [models.Sequelize.col('investigator.name'), 'author'],
-          'isAccepted'
+          'isAccepted',
+          'startDate',
+          'endDate',
+          'type'
         ],
         include: [{
           model: models.investigator,
