@@ -9,17 +9,17 @@ router.get('/outcomes', async (req, res, next) => {
     const investigatorId = +req.user.id
     let publications, theses, awards, patents, software
     if (!showMy) {
-      publications = (await Publication.findAndCountAll()).count
-      theses = (await These.findAndCountAll()).count
-      awards = (await Award.findAndCountAll()).count
-      patents = (await Patent.findAndCountAll()).count
-      software = (await Software.findAndCountAll()).count
+        publications = (await Publication.findAndCountAll()).count
+        theses = (await These.findAndCountAll()).count
+        awards = (await Award.findAndCountAll()).count
+        patents = (await Patent.findAndCountAll()).count
+        software = (await Software.findAndCountAll()).count
     } else {
-      publications = (await Publication.findAndCountAll({ where: { investigatorId } })).count
-      theses = (await These.findAndCountAll({ where: { investigatorId } })).count
-      awards = (await Award.findAndCountAll({ where: { investigatorId } })).count
-      patents = (await Patent.findAndCountAll({ where: { investigatorId } })).count
-      software = (await Software.findAndCountAll({ where: { investigatorId } })).count
+        publications = (await Publication.findAndCountAll({ where: { investigatorId } })).count
+        theses = (await These.findAndCountAll({ where: { investigatorId } })).count
+        awards = (await Award.findAndCountAll({ where: { investigatorId } })).count
+        patents = (await Patent.findAndCountAll({ where: { investigatorId } })).count
+        software = (await Software.findAndCountAll({ where: { investigatorId } })).count
     }
 
     const intelectualProp = patents + software
@@ -45,9 +45,14 @@ router.get('/outcomes', async (req, res, next) => {
 router.get('/awards', async (req, res, next) => {
   try {
     const showMy = (req.query.showMy === true || req.query.showMy === 'true')
+    const [isAnnualStatistics, msg, start, end] = checkYears(req.query.startYear, req.query.endYear)
     const investigatorId = +req.user.id
     let awards
     if (!showMy) {
+      if (isAnnualStatistics) {
+        const annualStatistics = await createAnnualStatistcs(start, end, Award)
+        return res.status(200).jsend.success( [...annualStatistics] )
+      }
       awards = (await Award.findAndCountAll()).count
     } else {
       awards = (await Award.findAndCountAll({ where: { investigatorId } })).count
@@ -100,9 +105,14 @@ router.get('/intellectual_properties', async (req, res, next) => {
 router.get('/projects', async (req, res, next) => {
   try {
     const showMy = (req.query.showMy === true || req.query.showMy === 'true')
+    const [isAnnualStatistics, msg, start, end] = checkYears(req.query.startYear, req.query.endYear)
     const investigatorId = +req.user.id
     let international, national, other
     if (!showMy) {
+      if (isAnnualStatistics) {
+        const annualStatistics = await createAnnualStatistcs(start, end, Project)
+        return res.status(200).jsend.success( [...annualStatistics] )
+      }
       international = (await Project.findAndCountAll(
         {
           where: {
@@ -165,9 +175,14 @@ router.get('/projects', async (req, res, next) => {
 router.get('/publications', async (req, res, next) => {
   try {
     const showMy = (req.query.showMy === true || req.query.showMy === 'true')
+    const [isAnnualStatistics, msg, start, end] = checkYears(req.query.startYear, req.query.endYear)
     const investigatorId = +req.user.id
     let books, bookChapters, editorials, proceedings, journals
     if (!showMy) {
+      if (isAnnualStatistics) {
+        const annualStatistics = await createAnnualStatistcs(start, end, Publication)
+        return res.status(200).jsend.success( [...annualStatistics] )
+      }
       books = (await Publication.findAndCountAll(
         {
           where: {
@@ -259,9 +274,14 @@ router.get('/publications', async (req, res, next) => {
 router.get('/theses', async (req, res, next) => {
   try {
     const showMy = (req.query.showMy === true || req.query.showMy === 'true')
+    const [isAnnualStatistics, msg, start, end] = checkYears(req.query.startYear, req.query.endYear)
     const investigatorId = +req.user.id
     let mscs, phds
     if (!showMy) {
+      if (isAnnualStatistics) {
+        const annualStatistics = await createAnnualStatistcs(start, end, These)
+        return res.status(200).jsend.success( [...annualStatistics] )
+      }
       mscs = (await These.findAndCountAll(
         {
           where: {
@@ -309,5 +329,52 @@ router.get('/theses', async (req, res, next) => {
       .error({ message: 'Erro ao retornar o total de Teses do CeDRI.' })
   }
 })
+
+function checkYears(_start, _end) {
+  let start = +_start
+  let end = +_end
+  if (start == null || end == null) {
+    return [false, `Nulo`, -1, -1]
+  }
+  if (start < 0) {
+    return [false, `Ano de início (${start} inválido. Deve ser positivo.`, -1, -1]
+  }
+  if (end < 0) {
+    return [false, `Ano de término (${start} inválido. Deve ser positivo.`, -1, -1]
+  }
+  if (start > end) {
+    return [false, `Ano de início (${end}) maior que ano de término (${start}).`,-1, -1]
+  }
+  if (!Number.isInteger(start)) {
+    return [false, `Ano de início (${start}) inválido. Deve ser um número.`,-1, -1]
+  }
+  if (!Number.isInteger(end)) {
+    return [false, `Ano de término (${end}) inválido. Deve ser um número.`,-1, -1]
+  }
+  return [true, `ok`, start, end]
+}
+
+async function createAnnualStatistcs(start, end, Model) {
+  let annualStatistics = []
+  for (let current = start; current <= end; current++) {
+    let statistic
+    if (Model.name === 'project') {
+      statistic = (await Model.findAndCountAll({
+        attributes: [models.sequelize.fn('YEAR', models.sequelize.col('startDate'))],
+        where: models.sequelize.where(models.sequelize.fn('YEAR', models.sequelize.col('startDate')), current)
+      })).count
+    } else {
+      statistic = (await Model.findAndCountAll({
+        attributes: [models.sequelize.fn('YEAR', models.sequelize.col('date'))],
+        where: models.sequelize.where(models.sequelize.fn('YEAR', models.sequelize.col('date')), current)
+      })).count
+    }
+    annualStatistics.push({
+      year: current,
+      qty: statistic
+    })
+  }
+  return annualStatistics
+}
 
 module.exports = router
