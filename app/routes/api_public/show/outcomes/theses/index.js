@@ -21,17 +21,13 @@ router.get('/:type', [
       .fail({ errors: errors.array() })
   }
   const type = req.params.type
-  const showYear = req.query.showYear
-  const optionsObj = showYear ? {
-    where: {
-      $and: [
-        { type },
-        models.sequelize.where(models.sequelize.fn('YEAR', models.sequelize.col('date')), showYear)
-      ]
-    }
-  } : { where: { type } }
   try {
-    const elements = await getPublicPosts(req, models.these, optionsObj)
+    const elements = await getPublicPosts(req, models.these, {
+      where: {
+        type
+      },
+      order: [['date', 'DESC']]
+    })
     return res
       .status(200)
       .jsend
