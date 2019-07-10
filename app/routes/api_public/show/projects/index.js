@@ -2,7 +2,7 @@ const router = require('express').Router()
 const getPublicPosts = require('../../../../config/global_modules/getPublicPosts')
 const models = require('../../../../models')
 const { param, validationResult } = require('express-validator/check')
-const { pagination } = require('../../../../../middleweres')
+const { pagination } = require('../../../../middleweres')
 
 router.get('/:type', [
   pagination,
