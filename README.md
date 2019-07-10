@@ -6,7 +6,7 @@ Backend desenvolvido em javaScript (nodeJs) para o sistema do CEDRI (http://cedr
 
 ## Como executar:
   * Depois de clonar o projeto executar o comando `npm install`, que intalará todas as dependencias (sequelize, mysql, etc)
-  * Criar uma conta que enviará os emails do sistema (criação de conta, regate de senhas, etc)
+  * Criar uma conta de email ou utilizar uma existente, que enviará os emails do sistema (criação de conta, regate de senhas, etc)
   * Criar um arquivo de configuração (config.json) dentro da pasta ***app*** > ***config***
     * Esqueleto do arquivo **config.json** deve ser:
     * `{
