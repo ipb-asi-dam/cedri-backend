@@ -1,8 +1,9 @@
 const router = require('express').Router()
 const getPublicPosts = require('../../../../../config/global_modules/getPublicPosts')
 const models = require('../../../../../models')
+const { pagination } = require('../../../../../middleweres')
 
-router.get('/', async (req, res) => {
+router.get('/', pagination, async (req, res) => {
   try {
     const elements = await getPublicPosts(req, models.event)
     return res

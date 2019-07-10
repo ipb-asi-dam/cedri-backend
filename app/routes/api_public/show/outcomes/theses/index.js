@@ -2,8 +2,10 @@ const router = require('express').Router()
 const getPublicPosts = require('../../../../../config/global_modules/getPublicPosts')
 const models = require('../../../../../models')
 const { param, validationResult } = require('express-validator/check')
+const { pagination } = require('../../../../../middleweres')
 
 router.get('/:type', [
+  pagination,
   param('type')
     .exists()
     .withMessage('type não pode ser nulo')
@@ -19,12 +21,17 @@ router.get('/:type', [
       .fail({ errors: errors.array() })
   }
   const type = req.params.type
+  const showYear = req.query.showYear
+  const optionsObj = showYear ? {
+    where: {
+      $and: [
+        { type },
+        models.sequelize.where(models.sequelize.fn('YEAR', models.sequelize.col('date')), showYear)
+      ]
+    }
+  } : { where: { type } }
   try {
-    const elements = await getPublicPosts(req, models.these, {
-      where: {
-        type
-      }
-    })
+    const elements = await getPublicPosts(req, models.these, optionsObj)
     return res
       .status(200)
       .jsend

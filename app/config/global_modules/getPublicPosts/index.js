@@ -8,7 +8,8 @@ module.exports = async (req, Model, optionsObj) => {
   optionsObj.page = page
   optionsObj.offset = offset
 
-  const elements = await Model.scope('public').findAll(optionsObj)
-
-  return elements
+  const elements = await Model.scope('public').findAndCountAll(optionsObj)
+  const pagesTotal = Math.ceil(elements.count / limit)
+  const countTotal = elements.count
+  return { elements: elements.rows, pagesTotal, countTotal }
 }
