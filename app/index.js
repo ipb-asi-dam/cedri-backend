@@ -10,12 +10,12 @@ const app = express()
 const middleware = require('../app/middleweres')
 const fileUploadOptions = {
   abortOnLimit: true,
-  limits: { fileSize: 1 * 1024 * 1024 },
+  limits: { fileSize: 16 * 1024 * 1024 },
   limitHandler: function (req, res, next) {
     return res
       .status(422)
       .jsend
-      .fail({ message: 'Tamanho de arquivo excedido. Maximo 1MB' })
+      .fail({ message: 'Tamanho de arquivo excedido. Maximo 16MB' })
   },
   safeFileNames: true, // remove hifens etc...
   preserveExtension: true,
