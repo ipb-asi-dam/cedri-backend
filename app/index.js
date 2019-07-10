@@ -18,8 +18,7 @@ const fileUploadOptions = {
       .fail({ message: 'Tamanho de arquivo excedido. Maximo 16MB' })
   },
   safeFileNames: true, // remove hifens etc...
-  preserveExtension: true,
-  responseOnLimit: 'Tamanho de arquivo excedido, MAX: 1MB'
+  preserveExtension: true
 }
 
 app.use(logger('dev'))
