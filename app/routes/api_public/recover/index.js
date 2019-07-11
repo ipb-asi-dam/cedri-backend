@@ -2,7 +2,7 @@ const router = require('express').Router()
 const models = require('../../../models')
 const Investigator = models.investigator
 const env = process.env.NODE_ENV || 'development'
-const { API_SECRET } = require('../../../config/config.json')[env]
+const { API_SECRET, frontIp } = require('../../../config/config.json')[env]
 const jwt = require('jsonwebtoken')
 const { query, check, validationResult } = require('express-validator/check')
 const mailer = require('../../../config/global_modules/mailer-wrap')
@@ -40,18 +40,21 @@ router.post('/', [
       expiresIn: '15m'
     })
     investigador.token = token
+    investigador.frontIp = frontIp
     try {
       await mailer.sendRecoveryEmail(investigador)
       return res.status(200)
         .jsend
         .success({ message: 'Email enviado com sucesso!' })
     } catch (err) {
+      console.log(err)
       return res
         .status(500)
         .jsend
         .error({ message: 'Erro ao enviar email' })
     }
   } catch (err) {
+    console.log(err)
     return res.status(500)
       .jsend
       .error({ message: 'Não foi possivel concluir a solicitação de recovery' })

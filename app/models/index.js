@@ -4,7 +4,7 @@ const Sequelize = require('sequelize')
 const env = process.env.NODE_ENV || 'development'
 const config = require('../../app/config/config.json')[env]
 const Op = Sequelize.Op
-const sequelize = new Sequelize(config.database, config.username, config.password, { operatorsAliases: { $and: Op.and }, ...config })
+const sequelize = new Sequelize(config.database, config.username, config.password, { operatorsAliases: { $and: Op.and, $between: Op.between }, ...config })
 const db = {}
 
 sequelize
