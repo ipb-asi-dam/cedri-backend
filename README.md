@@ -34,8 +34,8 @@ Backend desenvolvido em javaScript (nodeJs) para o sistema do CEDRI (http://cedr
             "charset": "utf8mb4"
           }
         }
-      }`
-      `{
+      },
+      {
         "production": {
           "port": "PORTA_BANCO_DE_DADOS",
           "database": "NOME_DATA_BASE",
